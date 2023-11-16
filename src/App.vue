@@ -6,11 +6,15 @@ import Nav from '@/components/Nav.vue'
   <div>
     <header>
       <Nav></Nav>
+      <div class="hr"></div>
     </header>
     <RouterView />
   </div>
 </template>
 
 <style scoped>
-
+.hr {
+  height: 1px;
+  background-color: #DBDBDB;
+}
 </style>
