@@ -79,6 +79,7 @@ const isAgreeAll = computed({
 
       <v-btn
         block
+        variant="flat"
         color="#1089FF"
       >
         Sign up
