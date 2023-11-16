@@ -5,6 +5,7 @@
 <template>
   <div>
     <v-carousel
+      cycle
       hide-delimiters
       show-arrows="hover"
     >
@@ -31,6 +32,6 @@
 .caro-item-img {
   position: absolute;
   top: 2rem;
-  right: 10vw;
+  right: 15vw;
 }
 </style>
