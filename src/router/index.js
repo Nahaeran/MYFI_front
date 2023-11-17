@@ -4,6 +4,7 @@ import DepositListView from '@/views/DepositListView.vue'
 import ExchangeView from '@/views/ExchangeView.vue'
 import BankMapView from '@/views/BankMapView.vue'
 import PostListView from '@/views/PostListView.vue'
+import PostDetailView from '@/views/PostDetailView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
 
@@ -34,6 +35,11 @@ const router = createRouter({
       path: '/posts',
       name: 'postList',
       component: PostListView
+    },
+    {
+      path: '/posts/:id',
+      name: 'postDetail',
+      component: PostDetailView
     },
     {
       path: '/signup',

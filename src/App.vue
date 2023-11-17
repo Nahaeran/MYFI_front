@@ -18,3 +18,9 @@ import Nav from '@/components/Nav.vue'
   background-color: #DBDBDB;
 }
 </style>
+
+<style>
+.color {
+  color: #1089FF;
+}
+</style>
