@@ -12,6 +12,14 @@ import Map from '@/components/Map.vue'
           md="3"
         >
           <v-text-field
+            label="광역시 / 도"
+          ></v-text-field>
+        </v-col>
+        <v-col
+          cols="12"
+          md="3"
+        >
+          <v-text-field
             label="시/군/구"
           ></v-text-field>
         </v-col>
@@ -27,14 +35,6 @@ import Map from '@/components/Map.vue'
           cols="12"
           md="3"
         >
-          <v-text-field
-            label="광역시 / 도"
-          ></v-text-field>
-        </v-col>
-        <v-col
-          cols="12"
-          md="3"
-        >
           <v-btn>
             찾기
           </v-btn>
@@ -44,7 +44,7 @@ import Map from '@/components/Map.vue'
     
     <Map
       :width="1000"
-      :height="1000"
+      :height="600"
     />
   </div>
 </template>
