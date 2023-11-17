@@ -9,6 +9,7 @@ const props = defineProps({
 })
 
 const center = ref([37.566826, 126.9786567])
+const level = ref(3)
 
 onMounted(() => {
   if (window.kakao && window.kakao.maps) {
@@ -46,7 +47,8 @@ const initMap = () => {
   const mapContainer = document.getElementById('map'), // 지도를 표시할 div 
       mapOption = {
           center: new kakao.maps.LatLng(center.value[0], center.value[1]), // 지도의 중심좌표
-          level: 3 // 지도의 확대 레벨
+          // level: 3 // 지도의 확대 레벨
+          level: level.value // 지도의 확대 레벨
       };  
 
   // 지도를 생성합니다    
@@ -55,28 +57,28 @@ const initMap = () => {
   kakao.maps.event.addListener(map, 'center_changed', function() {
 
   // 지도의  레벨을 얻어옵니다
-  var level = map.getLevel();
+  const levelMap = map.getLevel();
+  
+  level.value = levelMap
+
 
   // 지도의 중심좌표를 얻어옵니다 
-  var latlng = map.getCenter(); 
-  const lat = latlng.getLat()
-  const lng = latlng.getLng()
+  const latlng = map.getCenter(); 
+  // const lat = latlng.getLat()
+  // const lng = latlng.getLng()
+  center.value = [latlng.getLat(), latlng.getLng()]
 
-  console.log(`위도 : ${latlng.getLat()} 경도 : ${latlng.getLng()}`)
+  // console.log(`위도 : ${center.value[0]} 경도 : ${center.value[1]}`)
 
-  mapOption = {
-          center: new kakao.maps.LatLng(lat, lng), // 지도의 중심좌표
-          level: 3 // 지도의 확대 레벨
-      }; 
+  // mapOption = {
+  //         center: new kakao.maps.LatLng(lat, lng), // 지도의 중심좌표
+  //         level: 3 // 지도의 확대 레벨
+  //     }; 
   });
-
-  console.log(mapOption)
 
   // 장소 검색 객체를 생성합니다
   const ps = new kakao.maps.services.Places(map); 
   
-  
-
   // 카테고리로 은행을 검색합니다
   ps.categorySearch('BK9', placesSearchCB, {useMapBounds:true}); 
 
@@ -115,7 +117,7 @@ const clickCurrentSearch = function () {
 
 <template>
   <div>
-    <v-btn @click="clickCurrentSearch">현재 위치에서 찾기</v-btn>
+    <v-btn @click="clickCurrentSearch">현 지도에서 검색</v-btn>
     <div id="map" :style="`width: ${width}px; height: ${height}px;`"></div>
   </div>
 </template>
