@@ -8,13 +8,18 @@ const show = ref(false)
 
 const username = ref('')
 const password = ref('')
+const isRight = ref(true)
 
 const logIn = function () {
   const payload = {
     username: username.value,
     password: password.value
   }
-  userStore.logIn(payload)
+  isRight.value = userStore.logIn(payload)
+
+  if (!isRight.value) {
+    username.value = password.value = ''
+  }
 }
 </script>
 
@@ -38,7 +43,10 @@ const logIn = function () {
         v-model="password"
         @click:append="show = !show"
       ></v-text-field>
-
+      <div v-if="!isRight" class="warning text-red">
+        <p>아이디(로그인 전용 아이디) 또는 비밀번호를 잘못 입력했습니다.</p>
+        <p>입력하신 내용을 다시 확인해주세요.</p>
+      </div>
       <v-btn
         block
         variant="flat"
@@ -61,5 +69,10 @@ const logIn = function () {
 
 form {
   margin-top: 1rem;
+}
+
+.warning {
+  text-align: start;
+  margin-bottom: 1.2rem;
 }
 </style>

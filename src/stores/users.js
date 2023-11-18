@@ -47,9 +47,11 @@ export const useUserStore = defineStore('users', () => {
       .then((res) => {
         token.value = res.data.key
         router.push({ name: 'home' })
+        return true
       })
       .catch((err) => {
-        console.log(err)
+        console.clear()
+        return false
       })
   }
 
