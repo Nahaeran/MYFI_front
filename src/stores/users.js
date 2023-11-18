@@ -52,5 +52,21 @@ export const useUserStore = defineStore('users', () => {
         console.log(err)
       })
   }
-  return { token, isLogin, signUp, logIn }
+
+  const logOut = function () {
+    axios({
+      method: 'post',
+      url: `${API_URL}/dj-rest-auth/logout/`,
+    })
+      .then((res) => {
+        token.value = null
+        router.push({ name: 'home' })
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+
+  }
+
+  return { token, isLogin, signUp, logIn, logOut }
 }, { persist: true })

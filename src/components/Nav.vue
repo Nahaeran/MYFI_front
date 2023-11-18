@@ -1,5 +1,7 @@
 <script setup>
+import { useUserStore } from '@/stores/users'
 
+const userStore = useUserStore()
 </script>
 
 <template>
@@ -27,7 +29,7 @@
       </RouterLink>
     </div>
 
-    <div class="sign">
+    <div v-if="!userStore.isLogin" class="sign">
       <v-btn
         color="#1089FF"
         variant="outlined"
@@ -41,6 +43,15 @@
         :to="{ name: 'signUp'}"
       >
         Sign up
+      </v-btn>
+    </div>
+    <div v-else class="sign">
+      <v-btn
+        color="#1089FF"
+        variant="outlined"
+        @click.prevent="userStore.logOut"
+      >
+        Sign out
       </v-btn>
     </div>
     

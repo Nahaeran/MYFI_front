@@ -32,7 +32,6 @@ const signUp = function () {
     password1: password1.value,
     password2: password2.value,
   }
-  console.log(payload)
   userStore.signUp(payload)
 }
 

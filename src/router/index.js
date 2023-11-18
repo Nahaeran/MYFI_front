@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/users'
 import HomeView from '@/views/HomeView.vue'
 import DepositListView from '@/views/DepositListView.vue'
 import ExchangeView from '@/views/ExchangeView.vue'
@@ -7,6 +8,8 @@ import PostListView from '@/views/PostListView.vue'
 import PostDetailView from '@/views/PostDetailView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
+
+// const userStore = useUserStore()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,12 +47,26 @@ const router = createRouter({
     {
       path: '/signup',
       name: 'signUp',
-      component: SignUpView
+      component: SignUpView,
+      beforeEnter: (to, from) => {
+        const userStore = useUserStore()
+        if (userStore.isLogin) {
+          alert('이미 로그인 되어있습니다.')
+          return false
+        }
+      }
     },
     {
       path: '/signin',
       name: 'signIn',
-      component: SignInView
+      component: SignInView,
+      beforeEnter: (to, from) => {
+        const userStore = useUserStore()
+        if (userStore.isLogin) {
+          alert('이미 로그인 되어있습니다.')
+          return false
+        }
+      }
     },
   ]
 })
