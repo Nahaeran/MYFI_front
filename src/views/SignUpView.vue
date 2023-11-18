@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useUserStore } from '@/stores/users'
 import { useVuelidate } from '@vuelidate/core'
-import { email, required, sameAs, helpers } from '@vuelidate/validators'
+import { email, required, minLength, maxLength, sameAs, helpers } from '@vuelidate/validators'
 
 const userStore = useUserStore()
 
@@ -36,17 +36,27 @@ const state = ref({
 
 const rules = {
   username: { 
-    required: helpers.withMessage('필수 정보입니다.', required)
+    required: helpers.withMessage('필수 정보입니다.', required),
+    minLength: helpers.withMessage('5자 이상 입력해야합니다.', minLength(5)),
+    maxLength: helpers.withMessage('20자 이하로 입력해야합니다.', maxLength(20))
   },
   name: { 
-    required: helpers.withMessage('필수 정보입니다.', required)
+    required: helpers.withMessage('필수 정보입니다.', required),
+    maxLength: helpers.withMessage('20자 이하로 입력해야합니다.', maxLength(20))
   },
   email: {
     required: helpers.withMessage('필수 정보입니다.', required),
-    email: helpers.withMessage('이메일 주소가 정확한지 확인해 주세요.', email)
+    email: helpers.withMessage('이메일 주소가 정확한지 확인해 주세요.', email),
+    maxLength: helpers.withMessage('100자 이하로 입력해야합니다.', maxLength(100))
   },
   password1: { 
-    required: helpers.withMessage('필수 정보입니다.', required)
+    required: helpers.withMessage('필수 정보입니다.', required),
+    minLength: helpers.withMessage('8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요. 특수문자는 *!@#$%^&만 사용가능합니다.', minLength(8)),
+    maxLength: helpers.withMessage('8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요. 특수문자는 *!@#$%^&만 사용가능합니다.', maxLength(16)),
+    containspasswordrequirement: helpers.withMessage(
+      () => `8~16자의 영문 대/소문자, 숫자, 특수문자를 사용해 주세요. 특수문자는 *!@#$%^&만 사용가능합니다.`, 
+      (value) => /(?=.*[a-z])(?=.*[a-z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])/.test(value)
+    )
   },
   password2: { 
     required: helpers.withMessage('필수 정보입니다.', required),
