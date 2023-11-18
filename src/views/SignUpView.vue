@@ -1,6 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useUserStore } from '@/stores/users'
+import { useVuelidate } from '@vuelidate/core'
+import { email, required, sameAs, helpers } from '@vuelidate/validators'
 
 const userStore = useUserStore()
 
@@ -18,21 +20,74 @@ const isAgreeAll = computed({
   }  
 })
 
-const username = ref('')
-const name = ref('')
-const email = ref('')
-const password1 = ref('')
-const password2 = ref('')
+const errorAgree = ref('ㅤ')
+
+const initialState = {
+  username: '',
+  name: '',
+  email: '',
+  password1: '',
+  password2: '',
+}
+
+const state = ref({
+  ...initialState
+})
+
+const rules = {
+  username: { 
+    required: helpers.withMessage('필수 정보입니다.', required)
+  },
+  name: { 
+    required: helpers.withMessage('필수 정보입니다.', required)
+  },
+  email: {
+    required: helpers.withMessage('필수 정보입니다.', required),
+    email: helpers.withMessage('이메일 주소가 정확한지 확인해 주세요.', email)
+  },
+  password1: { 
+    required: helpers.withMessage('필수 정보입니다.', required)
+  },
+  password2: { 
+    required: helpers.withMessage('필수 정보입니다.', required),
+    sameAsPassword: helpers.withMessage('비밀번호가 일치하지 않습니다.',
+      sameAs(computed(() => state.value.password1))
+    )
+  }
+}
+
+const v$ = useVuelidate(rules, state)
+
+function clear () {
+  v$.value.$reset()
+
+  for (const [key, value] of Object.entries(initialState)) {
+    state[key] = value
+  }
+}
 
 const signUp = function () {
-  const payload = {
-    username: username.value,
-    name: name.value,
-    email: email.value,
-    password1: password1.value,
-    password2: password2.value,
+  v$.value.$validate()
+  
+  if (selected.value.length !== checkList.length) {
+    errorAgree.value = '약관에 동의하셔야 합니다.'
+    console.log('약관 동의하지 않음')
+  } else {
+    errorAgree.value = 'ㅤ'
+    if (v$.value.$error){
+      console.log('검사 통과되지 않음')
+    } else {
+      console.log('검사 통과')
+      const payload = {
+        username: state.value.username,
+        name: state.value.name,
+        email: state.value.email,
+        password1: state.value.password1,
+        password2: state.value.password2,
+      }
+      userStore.signUp(payload)
+    }
   }
-  userStore.signUp(payload)
 }
 
 </script>
@@ -42,6 +97,10 @@ const signUp = function () {
     <h1>Sign up to <span class="color">MYFI</span></h1>
 
     <div class="checkbox">
+      <p 
+        class="warning"
+        v-text="errorAgree"
+      ></p>
       <v-checkbox
         color="#1089FF"
         label="(필수) 서비스 이용약관 동의"
@@ -69,37 +128,56 @@ const signUp = function () {
         variant="outlined"
         color="#1089FF"
         label="아이디"
-        v-model="username"
+        v-model="state.username"
+        :error-messages="v$.username.$errors.map(e => e.$message)"
+        @input="v$.username.$touch"
+        @blur="v$.username.$touch"
       ></v-text-field>
+
       <v-text-field
         variant="outlined"
         color="#1089FF"
         label="이름"
-        v-model="name"
+        v-model="state.name"
+        :error-messages="v$.name.$errors.map(e => e.$message)"
+        @input="v$.name.$touch"
+        @blur="v$.name.$touch"
       ></v-text-field>
+
       <v-text-field
         variant="outlined"
         color="#1089FF"
         label="이메일"
-        v-model="email"
+        v-model="state.email"
+        :error-messages="v$.email.$errors.map(e => e.$message)"
+        @input="v$.email.$touch"
+        @blur="v$.email.$touch"
       ></v-text-field>
+
       <v-text-field
         variant="outlined"
         color="#1089FF"
         :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
         :type="show1 ? 'text' : 'password'"
         label="비밀번호"
-        v-model="password1"
+        v-model="state.password1"
         @click:append="show1 = !show1"
+        :error-messages="v$.password1.$errors.map(e => e.$message)"
+        @input="v$.password1.$touch"
+        @blur="v$.password1.$touch"
       ></v-text-field>
+
       <v-text-field
         variant="outlined"
         color="#1089FF"
         :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
         :type="show2 ? 'text' : 'password'"
         label="비밀번호 확인"
-        v-model="password2"
+        v-model="state.password2"
         @click:append="show2 = !show2"
+        :error-messages="v$.password2.$errors.map(e => e.$message)"
+        @input="v$.password2.$touch"
+        @blur="v$.password2.$touch"
       ></v-text-field>
 
       <v-btn
@@ -128,5 +206,16 @@ const signUp = function () {
 
 .v-checkbox {
   height: 40px;
+}
+
+form * {
+  text-align: start;
+  margin: 0.6rem 0;
+}
+
+.warning {
+  color: #b00020;
+  font-size: 12px;
+  margin: 0 0 0 15px;
 }
 </style>

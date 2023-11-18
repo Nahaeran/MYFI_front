@@ -27,7 +27,7 @@ const logIn = function () {
   <v-card class="container">
     <h1>Sign in to <span class="color">MYFI</span></h1>
 
-    <form @submit.prevent="logIn">
+    <form @submit="logIn">
       <v-text-field
         variant="outlined"
         color="#1089FF"
@@ -43,7 +43,7 @@ const logIn = function () {
         v-model="password"
         @click:append="show = !show"
       ></v-text-field>
-      <div v-if="!isRight" class="warning text-red">
+      <div v-show="!isRight" class="warning text-red">
         <p>아이디(로그인 전용 아이디) 또는 비밀번호를 잘못 입력했습니다.</p>
         <p>입력하신 내용을 다시 확인해주세요.</p>
       </div>
@@ -70,9 +70,12 @@ const logIn = function () {
 form {
   margin-top: 1rem;
 }
+</style>
 
+<style>
 .warning {
   text-align: start;
   margin-bottom: 1.2rem;
+  font-size: 15px;
 }
 </style>
