@@ -12,6 +12,8 @@ import * as directives from 'vuetify/directives'
 import '@mdi/font/css/materialdesignicons.css'
 import { ko } from 'vuetify/locale'
 
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+
 const vuetify = createVuetify({
   components,
   directives,
@@ -22,8 +24,11 @@ const vuetify = createVuetify({
 })
 
 const app = createApp(App)
+const pinia = createPinia()
 
-app.use(createPinia())
+pinia.use(piniaPluginPersistedstate)
+
+app.use(pinia)
 app.use(router)
 app.use(vuetify)
 

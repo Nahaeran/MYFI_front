@@ -1,5 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue'
+import { useUserStore } from '@/stores/users'
+
+const userStore = useUserStore()
 
 const checkList = ['service', 'info']
 const selected = ref([])
@@ -15,11 +18,29 @@ const isAgreeAll = computed({
   }  
 })
 
+const username = ref('')
+const name = ref('')
+const email = ref('')
+const password1 = ref('')
+const password2 = ref('')
+
+const signUp = function () {
+  const payload = {
+    username: username.value,
+    name: name.value,
+    email: email.value,
+    password1: password1.value,
+    password2: password2.value,
+  }
+  console.log(payload)
+  userStore.signUp(payload)
+}
+
 </script>
 
 <template>
   <v-card class="container">
-    <h1>Sign up to <span>MYFI</span></h1>
+    <h1>Sign up to <span class="color">MYFI</span></h1>
 
     <div class="checkbox">
       <v-checkbox
@@ -44,21 +65,24 @@ const isAgreeAll = computed({
       </v-checkbox>
     </div>
 
-    <form>
+    <form @submit.prevent="signUp">
       <v-text-field
         variant="outlined"
         color="#1089FF"
         label="아이디"
+        v-model="username"
       ></v-text-field>
       <v-text-field
         variant="outlined"
         color="#1089FF"
         label="이름"
+        v-model="name"
       ></v-text-field>
       <v-text-field
         variant="outlined"
         color="#1089FF"
         label="이메일"
+        v-model="email"
       ></v-text-field>
       <v-text-field
         variant="outlined"
@@ -66,6 +90,7 @@ const isAgreeAll = computed({
         :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'"
         :type="show1 ? 'text' : 'password'"
         label="비밀번호"
+        v-model="password1"
         @click:append="show1 = !show1"
       ></v-text-field>
       <v-text-field
@@ -74,6 +99,7 @@ const isAgreeAll = computed({
         :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'"
         :type="show2 ? 'text' : 'password'"
         label="비밀번호 확인"
+        v-model="password2"
         @click:append="show2 = !show2"
       ></v-text-field>
 
@@ -81,6 +107,7 @@ const isAgreeAll = computed({
         block
         variant="flat"
         color="#1089FF"
+        @click.prevent="signUp"
       >
         Sign up
       </v-btn>
@@ -96,19 +123,11 @@ const isAgreeAll = computed({
   text-align: center;
 }
 
-h1 span {
-  color: #1089FF;
-}
-
 .checkbox {
   margin: 1rem 0;
 }
 
 .v-checkbox {
   height: 40px;
-}
-
-.color {
-  color: #1089FF;
 }
 </style>
