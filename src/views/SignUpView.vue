@@ -81,7 +81,6 @@ const signUp = function () {
   
   if (selected.value.length !== checkList.length) {
     errorAgree.value = '약관에 동의하셔야 합니다.'
-    console.log('약관 동의하지 않음')
   } else {
     errorAgree.value = 'ㅤ'
     if (!v$.value.$error){
@@ -130,7 +129,7 @@ const signUp = function () {
       </v-checkbox>
     </div>
 
-    <form @submit.prevent="signUp">
+    <form @submit.prevent="signUp" @keydown.enter="signUp">
       <v-text-field
         variant="outlined"
         color="#1089FF"

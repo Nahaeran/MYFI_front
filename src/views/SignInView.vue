@@ -15,11 +15,14 @@ const logIn = function () {
     username: username.value,
     password: password.value
   }
-  isRight.value = userStore.logIn(payload)
-
-  if (!isRight.value) {
-    username.value = password.value = ''
-  }
+  const temp = userStore.logIn(payload)
+  
+  setTimeout(() => {
+    isRight.value = temp
+    if (!isRight.value) {
+      username.value = password.value = ''
+    }
+  }, 200)  
 }
 </script>
 
@@ -27,7 +30,7 @@ const logIn = function () {
   <v-card class="container">
     <h1>Sign in to <span class="color">MYFI</span></h1>
 
-    <form @submit="logIn">
+    <v-form @submit.prevent="logIn" @keydown.enter="logIn">
       <v-text-field
         variant="outlined"
         color="#1089FF"
@@ -55,7 +58,7 @@ const logIn = function () {
       >
         Sign in
       </v-btn>
-    </form>
+    </v-form>
   </v-card>
 </template>
 
