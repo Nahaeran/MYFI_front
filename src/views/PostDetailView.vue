@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, createCommentVNode } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import GoToBack from '@/components/GoToBack.vue'
@@ -30,7 +30,7 @@ onMounted(() => {
         // }, 300)
         post.value = res.data
         post.value.content = res.data.content.replaceAll("\n", "<br />")
-        console.log(post.value)
+        
         if (post.value.user.username === userStore.userInfo.username) {
           isPostedUser.value = true
         }
@@ -69,6 +69,47 @@ const deletePost = function () {
         console.log(err)
       })
   }
+}
+
+const createComment = function () {
+  axios({
+    method: 'post',
+    url: `${userStore.API_URL}/posts/${postId}/comments/`,
+    headers: {
+      Authorization: `Token ${userStore.token}`
+    },
+    data: {
+      content: commentContent.value
+    }
+  })
+    .then((res) => {
+      comments.value.push(res.data)
+      commentContent.value = ''
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const deleteComment = function (commentId) {
+  const answer = window.confirm('정말 삭제하시겠습니까?')
+
+  if (answer) {
+    axios({
+      method: 'delete',
+      url: `${userStore.API_URL}/posts/${postId}/comments/${commentId}/`,
+      headers: {
+        Authorization: `Token ${userStore.token}`
+      }
+    })
+      .then((res) => {
+        comments.value = comments.value.filter((comment) => comment.id != commentId)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+  
 }
 </script> 
 
@@ -120,10 +161,11 @@ const deletePost = function () {
       </main>
       <v-divider class="my-3"></v-divider>
 
-      <h3>댓글</h3>
+      <h3 class="mb-5">댓글</h3>
       <div v-if="userStore.isLogin" class="my-4">
         <v-form
           class="d-flex align-center"
+          @submit.prevent="createComment"
         >
           <v-text-field
             label="댓글"
@@ -136,6 +178,7 @@ const deletePost = function () {
             variant="tonal"
             size="large"
             class="mb-5 ml-3"
+            @click.prevent="createComment"
           >
             댓글 작성
           </v-btn>
@@ -166,6 +209,7 @@ const deletePost = function () {
               size="small"
               variant="tonal"
               color="red-darken-2"
+              @click="deleteComment(comment.id)"
             >삭제</v-btn>
           </div>
         </div>

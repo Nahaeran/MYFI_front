@@ -66,7 +66,6 @@ const updatePost = function () {
       }
     })
       .then((res) => {
-        console.log(res.data)
         router.push({ name: 'postDetail', params: { id: res.data.id } })
       })
       .catch((err) => {
