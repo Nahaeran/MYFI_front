@@ -129,7 +129,7 @@ const signUp = function () {
       </v-checkbox>
     </div>
 
-    <form @submit.prevent="signUp" @keydown.enter="signUp">
+    <form @submit.prevent="signUp" @keypress.enter="signUp">
       <v-text-field
         variant="outlined"
         color="#1089FF"

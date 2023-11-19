@@ -33,7 +33,7 @@ export const useUserStore = defineStore('users', () => {
 
     axios({
       method: 'post',
-      url: `${API_URL}/dj-rest-auth/registration/`,
+      url: `${API_URL}/accounts/registration/`,
       data: {
         username,
         name,
@@ -55,7 +55,7 @@ export const useUserStore = defineStore('users', () => {
 
     axios({
       method: 'post',
-      url: `${API_URL}/dj-rest-auth/login/`,
+      url: `${API_URL}/accounts/login/`,
       data: {
         username,
         password
@@ -76,7 +76,7 @@ export const useUserStore = defineStore('users', () => {
   const logOut = function () {
     axios({
       method: 'post',
-      url: `${API_URL}/dj-rest-auth/logout/`,
+      url: `${API_URL}/accounts/logout/`,
     })
       .then((res) => {
         token.value = null

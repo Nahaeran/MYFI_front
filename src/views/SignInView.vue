@@ -30,7 +30,7 @@ const logIn = function () {
   <v-card class="container">
     <h1>Sign in to <span class="color">MYFI</span></h1>
 
-    <v-form @submit.prevent="logIn" @keydown.enter="logIn">
+    <v-form @submit.prevent="logIn" @keypress.enter="logIn">
       <v-text-field
         variant="outlined"
         color="#1089FF"

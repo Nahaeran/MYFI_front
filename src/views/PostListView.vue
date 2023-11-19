@@ -92,15 +92,23 @@ onMounted(() => {
 
 <template>
   <div class="container">
-    <h1>금융 상품 <span class="color">후기</span> 게시판</h1>
+    <div class="d-flex justify-space-between align-end">
+      <h1>금융 상품 <span class="color">후기</span> 게시판</h1>
+      <v-btn
+        v-if="userStore.isLogin"
+        variant="flat"
+        color="#1089FF"
+        :to="{ name: 'postCreate' }"
+      >글 쓰기</v-btn>
+    </div>
     <v-table class="table">
       <thead>
         <tr>
           <!-- <th style="border-color: #e6f1fd;" class="text-left pl-10"> -->
-          <th class="text-left pl-10">
+          <th class="text-left pl-15">
             제목
           </th>
-          <th class="text-center">
+          <th class="text-left">
             작성자
           </th>
         </tr>
@@ -111,8 +119,8 @@ onMounted(() => {
           :key="post.id"
           @click="clickTr(post.id)"
         >
-          <td class="pl-10">{{ post.title }}</td>
-          <td width="30%" class="text-center">
+          <td class="pl-15">{{ post.title }}</td>
+          <td width="25%" class="text-left">
             <v-avatar size="small">
                 <v-img
                   id="img"
@@ -146,15 +154,6 @@ onMounted(() => {
 .table {
   border: 1px solid gray;
   border-radius: 5px;
-}
-
-/* thead > tr {
-  background-color: #e6f1fd;
-} */
-
-.text-left {
-  color: #1089FF;
-  font-weight: 900;
 }
 
 tbody > tr {

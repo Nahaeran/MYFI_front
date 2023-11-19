@@ -6,10 +6,9 @@ import ExchangeView from '@/views/ExchangeView.vue'
 import BankMapView from '@/views/BankMapView.vue'
 import PostListView from '@/views/PostListView.vue'
 import PostDetailView from '@/views/PostDetailView.vue'
+import PostCreateView from '@/views/PostCreateView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
-
-// const userStore = useUserStore()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +42,18 @@ const router = createRouter({
       path: '/posts/:id',
       name: 'postDetail',
       component: PostDetailView
+    },
+    {
+      path: '/posts/write',
+      name: 'postCreate',
+      component: PostCreateView,
+      beforeEnter: (to, from) => {
+        const userStore = useUserStore()
+        if (!userStore.isLogin) {
+          alert('로그인 후 이용 가능합니다.')
+          return { name: 'signIn'}
+        }
+      }
     },
     {
       path: '/signup',
