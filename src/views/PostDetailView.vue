@@ -1,13 +1,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import GoToBack from '@/components/GoToBack.vue'
 import axios from 'axios'
-import router from '../router'
 
 const route = useRoute()
 const postId = route.params.id
+const router = useRouter()
 
 const post = ref()
 const comments = ref()
@@ -29,6 +29,8 @@ onMounted(() => {
         //   }
         // }, 300)
         post.value = res.data
+        post.value.content = res.data.content.replaceAll("\n", "<br />")
+        console.log(post.value)
         if (post.value.user.username === userStore.userInfo.username) {
           isPostedUser.value = true
         }
@@ -43,7 +45,6 @@ onMounted(() => {
   })
     .then((res) => {
       comments.value = res.data
-      console.log(comments.value)
     })
     .catch((err) => {
       console.log(err)
@@ -62,14 +63,12 @@ const deletePost = function () {
       }
     })
       .then((res) => {
-        console.log(res.data)
         router.push({ name: 'postList'})
       })
       .catch((err) => {
         console.log(err)
       })
   }
-  
 }
 </script> 
 
@@ -101,6 +100,7 @@ const deletePost = function () {
               size="small"
               variant="tonal"
               color="green-darken-2"
+              :to="{ name: 'postUpdate', params: { id: postId }}"
             >수정</v-btn>
             <v-btn
               size="small"
@@ -115,7 +115,7 @@ const deletePost = function () {
 
       <main>
         <article class="text-body-1 my-10">
-          {{ post.content }}
+          <div v-html="post.content"></div>
         </article>
       </main>
       <v-divider class="my-3"></v-divider>
@@ -154,7 +154,7 @@ const deletePost = function () {
           <p class="ml-1 text-caption">{{ comment.user.name }}</p>
         </div>
         <div class="lower mt-1 mb-10 text-body-2 d-flex justify-space-between align-start">
-          <p class="comment-left">{{ comment.content }}</p>
+          <p class="comment-left" v-html="comment.content"></p>
           <div v-if="comment.user.username === userStore.userInfo.username" class="right">
             <v-btn
               class="mr-2"

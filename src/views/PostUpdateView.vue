@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import GoToBack from '@/components/GoToBack.vue'
 import PostForm from '@/components/PostForm.vue'
 import { useUserStore } from '@/stores/users'
@@ -17,8 +17,11 @@ const state = ref({
   ...initialState
 })
 
+const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
+
+const postId = route.params.id
 
 const rules = {
   title: {
@@ -33,17 +36,27 @@ const rules = {
 
 const v$ = useVuelidate(rules, state)
 
-const createPost = function (title, content) {
-  state.value.title = title
-  state.value.content = content
+onMounted(() => {
+  axios({
+    method: 'get',
+    url: `${userStore.API_URL}/posts/${postId}/`
+  })
+    .then((res) => {
+      state.value.title = res.data.title
+      state.value.content = res.data.content
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+})
 
+const updatePost = function () {
   v$.value.$validate()
-  console.log(v$.value.$error)
 
   if (!v$.value.$error) {
     axios({
-      method: 'post',
-      url: `${userStore.API_URL}/posts/`,
+      method: 'put',
+      url: `${userStore.API_URL}/posts/${postId}/`,
       headers: {
         Authorization: `Token ${userStore.token}`
       },
@@ -53,6 +66,7 @@ const createPost = function (title, content) {
       }
     })
       .then((res) => {
+        console.log(res.data)
         router.push({ name: 'postDetail', params: { id: res.data.id } })
       })
       .catch((err) => {
@@ -65,13 +79,16 @@ const createPost = function (title, content) {
 <template>
   <div class="container">
     <GoToBack />
-    <h1>글 쓰기</h1>
-    <!-- <v-form class="my-5" @keypress.enter="createPost">
+    <h1>게시글 수정하기</h1>
+    <v-form class="my-5" @submit.prevent="updatePost">
       <v-text-field
         variant="outlined"
         color="#1089FF"
         label="제목"
         v-model="state.title"
+        :error-messages="v$.title.$errors.map(e => e.$message)"
+        @input="v$.title.$touch"
+        @blur="v$.title.$touch"
       ></v-text-field>
       <v-textarea
         variant="outlined"
@@ -82,23 +99,25 @@ const createPost = function (title, content) {
         rows="15"
         row-height="25"
         shaped
+        :error-messages="v$.content.$errors.map(e => e.$message)"
+        @input="v$.content.$touch"
+        @blur="v$.content.$touch"
       ></v-textarea>
       <v-btn
         block
         variant="flat"
         color="#1089FF"
-        @click.prevent="createPost"
+        @click.prevent="updatePost"
       >
-        게시물 포스팅
+        게시물 수정하기
       </v-btn>
-    </v-form> -->
-    <PostForm 
+    </v-form>
+    <!-- <PostForm 
       :title="state.title"
       :content="state.content"
-      btn-string="게시물 포스팅"
-      :v$="v$"
+      btn-string="게시물 수정하기"
       @submit-form="createPost"
-    />
+    /> -->
   </div>
 </template>
 
@@ -108,4 +127,8 @@ const createPost = function (title, content) {
   margin: 2rem auto;
 }
 
+form * {
+  text-align: start;
+  margin: 0.6rem 0;
+}
 </style>

@@ -7,6 +7,7 @@ import BankMapView from '@/views/BankMapView.vue'
 import PostListView from '@/views/PostListView.vue'
 import PostDetailView from '@/views/PostDetailView.vue'
 import PostCreateView from '@/views/PostCreateView.vue'
+import PostUpdateView from '@/views/PostUpdateView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
 
@@ -47,6 +48,18 @@ const router = createRouter({
       path: '/posts/write',
       name: 'postCreate',
       component: PostCreateView,
+      beforeEnter: (to, from) => {
+        const userStore = useUserStore()
+        if (!userStore.isLogin) {
+          alert('로그인 후 이용 가능합니다.')
+          return { name: 'signIn'}
+        }
+      }
+    },
+    {
+      path: '/posts/:id/update',
+      name: 'postUpdate',
+      component: PostUpdateView,
       beforeEnter: (to, from) => {
         const userStore = useUserStore()
         if (!userStore.isLogin) {
