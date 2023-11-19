@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import GoToBack from '@/components/GoToBack.vue'
 import axios from 'axios'
+import router from '../router'
 
 const route = useRoute()
 const postId = route.params.id
@@ -48,6 +49,28 @@ onMounted(() => {
       console.log(err)
     })
 })
+
+const deletePost = function () {
+  const answer = window.confirm('정말 삭제하시겠습니까?')
+
+  if (answer) {
+    axios({
+      method: 'delete',
+      url: `${userStore.API_URL}/posts/${postId}/`,
+      headers: {
+        Authorization: `Token ${userStore.token}`
+      }
+    })
+      .then((res) => {
+        console.log(res.data)
+        router.push({ name: 'postList'})
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+  
+}
 </script> 
 
 <template>
@@ -83,6 +106,7 @@ onMounted(() => {
               size="small"
               variant="tonal"
               color="red-darken-2"
+              @click.prevent="deletePost"
             >삭제</v-btn>
           </div>
         </div>
