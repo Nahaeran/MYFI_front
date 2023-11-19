@@ -63,11 +63,6 @@ const items = ref(['click1', 'click2'])
           </v-btn>
         </template>
 
-        <!-- <v-list>
-          <v-list-item v-for="(item, i) in items" :key="i">
-            <v-list-item-title>{{ item }}</v-list-item-title>
-          </v-list-item>
-        </v-list> -->
         <v-card class="card">
           <v-card-text>
             <div class="mx-auto text-center">

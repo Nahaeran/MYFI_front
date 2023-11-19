@@ -5,7 +5,6 @@ import axios from 'axios'
 import { useUserStore } from '@/stores/users'
 
 export const usePostStore = defineStore('posts', () => {
-  const API_URL = 'http://127.0.0.1:8000'
   const router = useRouter()
   const posts = ref([])
   const userStore = useUserStore()
@@ -13,17 +12,16 @@ export const usePostStore = defineStore('posts', () => {
   const getPosts = function () {
     axios({
       method: 'get',
-      url: `${API_URL}/posts/`,
-      headers: {
-        Authorization: `Token ${userStore.token}`
-      }
+      url: `${userStore.API_URL}/posts/`
     })
       .then((res) => {
-        console.log(res.data)
+        posts.value = res.data
+        console.log(posts.value)
       })
       .catch((err) => {
         console.log(err)
       })
   }
+
   return { posts, getPosts }
 }, { persist: true })

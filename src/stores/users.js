@@ -10,7 +10,7 @@ export const useUserStore = defineStore('users', () => {
   const isLogin = computed(() => {
     return token.value === null ? false : true
   })
-  const userInfo = ref([])
+  const userInfo = ref()
 
   const getUserInfo = function (username) {
     axios({
@@ -22,7 +22,6 @@ export const useUserStore = defineStore('users', () => {
     })
       .then((res) => {
         userInfo.value = res.data
-        console.log(userInfo.value)
       })
       .catch((err) => {
         console.log(err)

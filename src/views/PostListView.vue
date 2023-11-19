@@ -2,82 +2,84 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { usePostStore } from '@/stores/posts'
+import { useUserStore } from '@/stores/users'
 
 const postStore = usePostStore()
+const userStore = useUserStore()
 const router = useRouter()
 
-let id = 1
-const posts = [
-  {
-    id: id++,
-    title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
-    user: {
-      name: '나해란'
-    }
-  },
-  {
-    id: id++,
-    title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
-    user: {
-      name: '송찬의'
-    }
-  },
-  {
-    id: id++,
-    title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
-    user: {
-      name: '나해란'
-    }
-  },
-  {
-    id: id++,
-    title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
-    user: {
-      name: '송찬의'
-    }
-  },
-  {
-    id: id++,
-    title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
-    user: {
-      name: '나해란'
-    }
-  },
-  {
-    id: id++,
-    title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
-    user: {
-      name: '송찬의'
-    }
-  },{
-    id: id++,
-    title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
-    user: {
-      name: '나해란'
-    }
-  },
-  {
-    id: id++,
-    title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
-    user: {
-      name: '송찬의'
-    }
-  },
-  {
-    id: id++,
-    title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
-    user: {
-      name: '나해란'
-    }
-  },
-  {
-    id: id++,
-    title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
-    user: {
-      name: '송찬의'
-    }
-  },
-]
+// let id = 1
+// const posts = [
+//   {
+//     id: id++,
+//     title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
+//     user: {
+//       name: '나해란'
+//     }
+//   },
+//   {
+//     id: id++,
+//     title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
+//     user: {
+//       name: '송찬의'
+//     }
+//   },
+//   {
+//     id: id++,
+//     title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
+//     user: {
+//       name: '나해란'
+//     }
+//   },
+//   {
+//     id: id++,
+//     title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
+//     user: {
+//       name: '송찬의'
+//     }
+//   },
+//   {
+//     id: id++,
+//     title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
+//     user: {
+//       name: '나해란'
+//     }
+//   },
+//   {
+//     id: id++,
+//     title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
+//     user: {
+//       name: '송찬의'
+//     }
+//   },{
+//     id: id++,
+//     title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
+//     user: {
+//       name: '나해란'
+//     }
+//   },
+//   {
+//     id: id++,
+//     title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
+//     user: {
+//       name: '송찬의'
+//     }
+//   },
+//   {
+//     id: id++,
+//     title: "✨ ㅇㅇㅇ은행 ㅁㅁㅁㅁ금융상품 후기 !! ✨",
+//     user: {
+//       name: '나해란'
+//     }
+//   },
+//   {
+//     id: id++,
+//     title: "ㅁㅁ은행의 XXX금융상품 추천합니다. ❗❗",
+//     user: {
+//       name: '송찬의'
+//     }
+//   },
+// ]
 
 const clickTr = (postId) => {
   router.push({ name: 'postDetail', params: {id: postId}})
@@ -86,7 +88,6 @@ const clickTr = (postId) => {
 onMounted(() => {
   postStore.getPosts()
 })
-
 </script>
 
 <template>
@@ -95,22 +96,31 @@ onMounted(() => {
     <v-table class="table">
       <thead>
         <tr>
-          <th class="text-left">
+          <!-- <th style="border-color: #e6f1fd;" class="text-left pl-10"> -->
+          <th class="text-left pl-10">
             제목
           </th>
-          <th class="text-left">
+          <th class="text-center">
             작성자
           </th>
         </tr>
       </thead>
       <tbody>
         <tr
-          v-for="post in posts"
+          v-for="post in postStore.posts"
           :key="post.id"
           @click="clickTr(post.id)"
         >
-          <td>{{ post.title }}</td>
-          <td>{{ post.user.name }}</td>
+          <td class="pl-10">{{ post.title }}</td>
+          <td width="30%" class="text-center">
+            <v-avatar size="small">
+                <v-img
+                  id="img"
+                  :src="`${userStore.API_URL}${post.user.profile_img}`"
+                  alt="profile-img"
+                ></v-img>
+              </v-avatar>
+            {{ post.user.name }}</td>
         </tr>
       </tbody>
     </v-table>
@@ -140,7 +150,6 @@ onMounted(() => {
 
 /* thead > tr {
   background-color: #e6f1fd;
-  font-weight: 600;
 } */
 
 .text-left {
@@ -148,7 +157,12 @@ onMounted(() => {
   font-weight: 900;
 }
 
-/* tbody > tr:hover {
-  background-color: #e6f1fd;
-} */
+tbody > tr {
+  transition: 200ms;
+  cursor: pointer;
+}
+
+tbody > tr:hover {
+  background-color: rgb(247, 250, 253);
+}
 </style>
