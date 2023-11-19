@@ -10,6 +10,7 @@ import PostCreateView from '@/views/PostCreateView.vue'
 import PostUpdateView from '@/views/PostUpdateView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
+import MyPageView from '@/views/MyPageView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -89,6 +90,18 @@ const router = createRouter({
         if (userStore.isLogin) {
           alert('이미 로그인 되어있습니다.')
           return false
+        }
+      }
+    },
+    {
+      path: '/:username',
+      name: 'myPage',
+      component: MyPageView,
+      beforeEnter: (to, from) => {
+        const userStore = useUserStore()
+        if (!userStore.isLogin) {
+          alert('로그인 후 이용 가능합니다.')
+          return { name: 'signIn'}
         }
       }
     },

@@ -82,6 +82,7 @@ const items = ref(['click1', 'click2'])
                 rounded
                 variant="text"
                 size="large"
+                :to="{ name: 'myPage', params: { username: userStore.userInfo.username }}"
               >
                 마이페이지
               </v-btn>
