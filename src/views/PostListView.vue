@@ -1,6 +1,9 @@
 <script setup>
+import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { usePostStore } from '@/stores/posts'
 
+const postStore = usePostStore()
 const router = useRouter()
 
 let id = 1
@@ -79,6 +82,10 @@ const posts = [
 const clickTr = (postId) => {
   router.push({ name: 'postDetail', params: {id: postId}})
 }
+
+onMounted(() => {
+  postStore.getPosts()
+})
 
 </script>
 
