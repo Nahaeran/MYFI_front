@@ -10,13 +10,31 @@ export const useUserStore = defineStore('users', () => {
   const isLogin = computed(() => {
     return token.value === null ? false : true
   })
+  const userInfo = ref([])
+
+  const getUserInfo = function (username) {
+    axios({
+      method: 'get',
+      url: `${API_URL}/users/${username}/info/`,
+      headers: {
+        Authorization: `Token ${token.value}`
+      }
+    })
+      .then((res) => {
+        userInfo.value = res.data
+        console.log(userInfo.value)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
 
   const signUp = function (payload) {
     const { username, name, email, password1, password2 } = payload
 
     axios({
       method: 'post',
-      url: `${API_URL}/dj-rest-auth/registation/`,
+      url: `${API_URL}/dj-rest-auth/registration/`,
       data: {
         username,
         name,
@@ -46,6 +64,7 @@ export const useUserStore = defineStore('users', () => {
     })
       .then((res) => {
         token.value = res.data.key
+        getUserInfo(username)
         router.push({ name: 'home' })
         return true
       })
@@ -62,6 +81,7 @@ export const useUserStore = defineStore('users', () => {
     })
       .then((res) => {
         token.value = null
+        userInfo.value = []
         router.push({ name: 'home' })
       })
       .catch((err) => {
@@ -70,5 +90,5 @@ export const useUserStore = defineStore('users', () => {
 
   }
 
-  return { token, isLogin, signUp, logIn, logOut }
+  return { API_URL, token, isLogin, userInfo, getUserInfo, signUp, logIn, logOut }
 }, { persist: true })

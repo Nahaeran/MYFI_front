@@ -1,5 +1,5 @@
 <script setup>
-
+import Map from '@/components/Map.vue'
 </script>
 
 <template>
@@ -67,6 +67,11 @@
       </v-carousel-item>
     </v-carousel>
   </div>
+
+  <Map 
+    :width="350"
+    :height="500"
+  />
 </template>
 
 <style scoped>

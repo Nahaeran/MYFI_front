@@ -1,7 +1,10 @@
 <script setup>
+import { ref } from 'vue'
 import { useUserStore } from '@/stores/users'
 
 const userStore = useUserStore()
+
+const items = ref(['click1', 'click2'])
 </script>
 
 <template>
@@ -35,26 +38,72 @@ const userStore = useUserStore()
         variant="outlined"
         :to="{ name: 'signIn'}"
       >
-        Sign in
+        로그인
       </v-btn>
       <v-btn
         color="#1089FF"
         variant="flat"
         :to="{ name: 'signUp'}"
       >
-        Sign up
+        회원가입
       </v-btn>
     </div>
     <div v-else class="sign">
-      <v-btn
-        color="#1089FF"
-        variant="outlined"
-        @click.prevent="userStore.logOut"
-      >
-        Sign out
-      </v-btn>
+      <v-menu transition="scale-transition">
+        <template v-slot:activator="{ props }">
+          <v-btn icon v-bind="props">
+            <v-avatar>
+              <v-img
+                id="img"
+                :src="`${userStore.API_URL}${userStore.userInfo.profile_img}`"
+                alt="profile-img"
+                v-bind="props"
+              ></v-img>
+            </v-avatar>
+          </v-btn>
+        </template>
+
+        <!-- <v-list>
+          <v-list-item v-for="(item, i) in items" :key="i">
+            <v-list-item-title>{{ item }}</v-list-item-title>
+          </v-list-item>
+        </v-list> -->
+        <v-card class="card">
+          <v-card-text>
+            <div class="mx-auto text-center">
+              <v-avatar size="large">
+                <v-img
+                  id="img"
+                  :src="`${userStore.API_URL}${userStore.userInfo.profile_img}`"
+                  alt="profile-img"
+                ></v-img>
+              </v-avatar>
+              <h2 class="mt-2">{{ userStore.userInfo.name }}</h2>
+              <p class="text-subtitle-1 mt-1">
+                {{ userStore.userInfo.email }}
+              </p>
+              <v-divider class="my-2"></v-divider>
+              <v-btn
+                rounded
+                variant="text"
+                size="large"
+              >
+                마이페이지
+              </v-btn>
+              <v-divider class="my-2"></v-divider>
+              <v-btn
+                rounded
+                variant="text"
+                size="large"
+                @click.prevent="userStore.logOut"
+              >
+                로그아웃
+              </v-btn>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-menu>
     </div>
-    
   </div>
 </template>
 
@@ -101,5 +150,9 @@ const userStore = useUserStore()
 
 .sign * {
   margin: 5px;
+}
+
+.card {
+  width: 180px;
 }
 </style>

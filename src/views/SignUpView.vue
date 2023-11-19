@@ -84,10 +84,7 @@ const signUp = function () {
     console.log('약관 동의하지 않음')
   } else {
     errorAgree.value = 'ㅤ'
-    if (v$.value.$error){
-      console.log('검사 통과되지 않음')
-    } else {
-      console.log('검사 통과')
+    if (!v$.value.$error){
       const payload = {
         username: state.value.username,
         name: state.value.name,
