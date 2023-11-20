@@ -11,10 +11,27 @@ const router = useRouter()
 
 const post = ref()
 const comments = ref()
+
+const dialog = ref(false)
 const isPostedUser = ref(false)
 const commentContent = ref('')
+const updatedCommentId = ref()
+const updatedCommentContent = ref('')
 
 const userStore = useUserStore()
+
+const getComments = function () {
+  axios({
+    method: 'get',
+    url: `${userStore.API_URL}/posts/${postId}/comments/`
+  })
+    .then((res) => {
+      comments.value = res.data
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
 
 onMounted(() => {
   axios({
@@ -39,16 +56,17 @@ onMounted(() => {
         console.log(err)
       })
 
-  axios({
-    method: 'get',
-    url: `${userStore.API_URL}/posts/${postId}/comments/`
-  })
-    .then((res) => {
-      comments.value = res.data
-    })
-    .catch((err) => {
-      console.log(err)
-    })
+  // axios({
+  //   method: 'get',
+  //   url: `${userStore.API_URL}/posts/${postId}/comments/`
+  // })
+  //   .then((res) => {
+  //     comments.value = res.data
+  //   })
+  //   .catch((err) => {
+  //     console.log(err)
+  //   })
+  getComments()
 })
 
 const deletePost = function () {
@@ -109,7 +127,37 @@ const deleteComment = function (commentId) {
         console.log(err)
       })
   }
+}
+
+const close = function () {
+  dialog.value = false
+}
+
+const editComment = function (commentId, value) {
+  updatedCommentId.value = commentId
+  updatedCommentContent.value = value
   
+  dialog.value = true
+}
+
+const save = function () {
+  axios({
+    method: 'put',
+    url: `${userStore.API_URL}/posts/${postId}/comments/${updatedCommentId.value}/`,
+    headers: {
+      Authorization: `Token ${userStore.token}`
+    },
+    data: {
+      content: updatedCommentContent.value
+    }
+  })
+    .then((res) => {
+      getComments()
+      dialog.value = false
+    })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 </script> 
 
@@ -119,7 +167,20 @@ const deleteComment = function (commentId) {
       <GoToBack />
       <header>
         <p class="text-subtitle-2">{{ post.id }}번째 게시물</p>
-        <h1>{{ post.title }}</h1>
+        <div class="d-flex justify-space-between align-center">
+          <h1>{{ post.title }}</h1>
+          <div class="d-flex">
+            <p class="mr-2 text-caption">작성자 :</p>
+            <v-avatar size="x-small">
+              <v-img
+                :src="`${userStore.API_URL}${post.user.profile_img}`"
+                alt="profile-img"
+              ></v-img>
+            </v-avatar>
+            <p class="ml-1 text-caption">{{ post.user.name }}</p>
+          </div>
+        </div>
+        
         <div class="d-flex justify-space-between">
           <div class="left">
             <span class="text-caption">작성일 : 
@@ -185,11 +246,37 @@ const deleteComment = function (commentId) {
         </v-form>
       </div>
 
+      <v-dialog v-model="dialog" width="400">
+            <v-card>
+              <v-card-title>
+                <span class="mx-2 font-weight-bold">댓글 수정</span>
+              </v-card-title>
+
+              <v-card-text>
+                <v-text-field
+                  color="#1089FF"
+                  v-model="updatedCommentContent"
+                  label="댓글"
+                  @keypress.enter="save"
+                ></v-text-field>
+              </v-card-text>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="#1089FF" variant="text" @click="close">
+                  Cancel
+                </v-btn>
+                <v-btn color="#1089FF" variant="text" @click="save">
+                  Save
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
       <div class="comment-container" v-for="comment in comments" :key="comment.id">
         <div class="upper d-flex align-center mb-2">
           <v-avatar size="x-small">
             <v-img
-              id="img"
               :src="`${userStore.API_URL}${comment.user.profile_img}`"
               alt="profile-img"
             ></v-img>
@@ -204,6 +291,7 @@ const deleteComment = function (commentId) {
               size="small"
               variant="tonal"
               color="green-darken-2"
+              @click="editComment(comment.id, comment.content)"
             >수정</v-btn>
             <v-btn
               size="small"
