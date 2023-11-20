@@ -240,10 +240,10 @@ const deleteComment = function (commentId) {
 }
 
 .comment-left {
-  width: 892px;
+  width: 880px;
 }
 
 .right {
-  width: 108px;
+  width: 120px;
 }
 </style>

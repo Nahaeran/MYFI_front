@@ -3,8 +3,6 @@ import { ref } from 'vue'
 import { useUserStore } from '@/stores/users'
 
 const userStore = useUserStore()
-
-const items = ref(['click1', 'click2'])
 </script>
 
 <template>

@@ -33,12 +33,11 @@ const rules = {
 
 const v$ = useVuelidate(rules, state)
 
-const createPost = function (title, content) {
-  state.value.title = title
-  state.value.content = content
+const createPost = function () {
+  // state.value.title = title
+  // state.value.content = content
 
   v$.value.$validate()
-  console.log(v$.value.$error)
 
   if (!v$.value.$error) {
     axios({
@@ -66,12 +65,15 @@ const createPost = function (title, content) {
   <div class="container">
     <GoToBack />
     <h1>글 쓰기</h1>
-    <!-- <v-form class="my-5" @keypress.enter="createPost">
+    <v-form class="my-5" @keypress.enter="createPost">
       <v-text-field
         variant="outlined"
         color="#1089FF"
         label="제목"
         v-model="state.title"
+        :error-messages="v$.title.$errors.map(e => e.$message)"
+        @input="v$.title.$touch"
+        @blur="v$.title.$touch"
       ></v-text-field>
       <v-textarea
         variant="outlined"
@@ -82,6 +84,9 @@ const createPost = function (title, content) {
         rows="15"
         row-height="25"
         shaped
+        :error-messages="v$.content.$errors.map(e => e.$message)"
+        @input="v$.content.$touch"
+        @blur="v$.content.$touch"
       ></v-textarea>
       <v-btn
         block
@@ -91,14 +96,14 @@ const createPost = function (title, content) {
       >
         게시물 포스팅
       </v-btn>
-    </v-form> -->
-    <PostForm 
+    </v-form>
+    <!-- <PostForm 
       :title="state.title"
       :content="state.content"
       btn-string="게시물 포스팅"
       :v$="v$"
       @submit-form="createPost"
-    />
+    /> -->
   </div>
 </template>
 

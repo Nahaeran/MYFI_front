@@ -11,6 +11,10 @@ import PostUpdateView from '@/views/PostUpdateView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
 import MyPageView from '@/views/MyPageView.vue'
+import ProductManageView from '@/views/ProductManageView.vue'
+import MyPage from '@/components/MyPage.vue'
+import ProductManage from '@/components/ProductManage.vue'
+import ProductRecommend from '@/components/ProductRecommend.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -95,7 +99,6 @@ const router = createRouter({
     },
     {
       path: '/:username',
-      name: 'myPage',
       component: MyPageView,
       beforeEnter: (to, from) => {
         const userStore = useUserStore()
@@ -103,7 +106,24 @@ const router = createRouter({
           alert('로그인 후 이용 가능합니다.')
           return { name: 'signIn'}
         }
-      }
+      },
+      children: [
+        {
+          path: '',
+          name: 'myPage',
+          component: MyPage
+        },
+        {
+          path: 'products',
+          name: 'productManage',
+          component: ProductManage
+        },
+        {
+          path: 'recommend',
+          name: 'productRecommend',
+          component: ProductRecommend
+        }
+      ]
     },
   ]
 })
