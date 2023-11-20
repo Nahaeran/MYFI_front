@@ -264,10 +264,10 @@ const save = function () {
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn color="#1089FF" variant="text" @click="close">
-                  Cancel
+                  취소
                 </v-btn>
                 <v-btn color="#1089FF" variant="text" @click="save">
-                  Save
+                  수정
                 </v-btn>
               </v-card-actions>
             </v-card>
