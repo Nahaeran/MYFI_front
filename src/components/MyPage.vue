@@ -1,13 +1,29 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/users'
+import { useVuelidate } from '@vuelidate/core'
+import { required, integer, helpers } from '@vuelidate/validators'
+import axios from 'axios'
 
 const userInfo = ref()
 const dialog = ref(false)
-const updateValue = ref('')
+// const updateValue = ref('')
 const selectedKey = ref('')
+const state = ref({
+  updateValue: ''
+})
 
 const userStore = useUserStore()
+const usernameTemp = userStore.userInfo.username
+
+const rules = {
+  updateValue: {
+    required: helpers.withMessage('필수 정보입니다.', required),
+    integer: helpers.withMessage('숫자를 입력해야합니다.', integer)
+  }
+}
+
+const v$ = useVuelidate(rules, state)
 
 onMounted(() => {
   userInfo.value = {
@@ -24,6 +40,7 @@ onMounted(() => {
 const editValue = function (key, value) {
   console.log(key, value)
   selectedKey.value = key
+  state.value.updateValue = userInfo.value[key]
   dialog.value = true
 }
 
@@ -32,7 +49,39 @@ const close = function () {
 }
 
 const save = function () {
-  console.log('click save')
+  v$.value.$validate()
+
+  if (!v$.value.$error) {
+    const key = ref('')
+    if (selectedKey.value === '나이') {
+      key.value = 'age'
+    } else if (selectedKey.value === '현재 가진 금액') {
+      key.value = 'money'
+    } else if (selectedKey.value === '연봉') {
+      key.value = 'salary'
+    }
+
+    axios({
+      method: 'put',
+      url: `${userStore.API_URL}/users/${usernameTemp}/info/`,
+      headers: {
+        Authorization: `Token ${userStore.token}`
+      },
+      data: {
+        [key.value]: state.value.updateValue
+      }
+    })
+      .then((res) => {
+        userStore.getUserInfo(usernameTemp)
+        userInfo.value[selectedKey.value] = state.value.updateValue
+        selectedKey.value = state.value.updateValue = ''
+        dialog.value = false
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+  
 }
 </script>
 
@@ -70,9 +119,13 @@ const save = function () {
 
               <v-card-text>
                 <v-text-field
+                  type="number"
                   color="#1089FF"
-                  v-model="updateValue"
+                  v-model="state.updateValue"
                   :label="selectedKey"
+                  :error-messages="v$.updateValue.$errors.map(e => e.$message)"
+                  @input="v$.updateValue.$touch"
+                  @blur="v$.updateValue.$touch"
                 ></v-text-field>
               </v-card-text>
 
