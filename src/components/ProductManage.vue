@@ -7,6 +7,7 @@ const userStore = useUserStore()
 <template>
   <div>
     <h1><span class="color">{{ userStore.userInfo.name }}</span>님의 가입 상품 관리 페이지</h1>
+    <v-divider class="my-3"></v-divider>
   </div>
 </template>
 
