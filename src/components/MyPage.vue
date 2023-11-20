@@ -7,7 +7,8 @@ import axios from 'axios'
 
 const userInfo = ref()
 const dialog = ref(false)
-// const updateValue = ref('')
+const isShowProfileInput = ref(false)
+const image = ref()
 const selectedKey = ref('')
 const state = ref({
   updateValue: ''
@@ -81,7 +82,34 @@ const save = function () {
         console.log(err)
       })
   }
-  
+}
+
+const editProfileImg = function (event) {
+  if (isShowProfileInput.value === false) {
+    isShowProfileInput.value = true
+  } else {
+    console.log(event)
+    console.log(image.value)
+    axios({
+      method: 'put',
+      url: `${userStore.API_URL}/users/${usernameTemp}/profile/`,
+      headers: {
+        Authorization: `Token ${userStore.token}`,
+        "Content-Type": 'multipart/form-data'
+      },
+      data: {
+        'profile_img': image.value
+      }
+    })
+      .then((res) => {
+        // console.log(res.data)
+        userStore.getUserInfo(usernameTemp)
+        isShowProfileInput.value = false
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
 }
 </script>
 
@@ -102,9 +130,19 @@ const save = function () {
           <v-btn
             variant="flat"
             color="#1089FF"
+            @click.prevent="editProfileImg"
           >
             프로필 이미지 변경
           </v-btn>
+          <v-file-input
+            v-show="isShowProfileInput"
+            accept="image/png, image/jpeg, image/bmp"
+            variant="underlined"
+            label="프로필 이미지"
+            v-model="image"
+            class="mt-4"
+          >
+          </v-file-input>
         </div>
       </div>
 
