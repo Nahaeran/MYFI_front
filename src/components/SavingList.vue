@@ -23,7 +23,14 @@ const selectedBank = ref('전체 보기')
 const selectedRow = ref()
 const selectedSavingSimple = ref()
 const selectedSaving = ref()
+const selectedSavingCode = computed(() => {
+  return selectedSavingSimple.value?.['saving_code']
+})
 const dialog = ref(false)
+
+const isContractSaving = computed(() => {
+  return userStore.userInfo?.contract_saving.some(e => e['saving_code'] === selectedSavingCode.value)
+})
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -115,7 +122,7 @@ const getSaving = function () {
   const savingCode = selectedSavingSimple.value['saving_code']
   axios({
     method: 'get',
-    url: `${userStore.API_URL}/financial/saving_list/${savingCode}/`
+    url: `${userStore.API_URL}/financial/saving_list/${selectedSavingCode.value}/`
   })
     .then((res) => {
       const data = res.data
@@ -131,6 +138,38 @@ const getSaving = function () {
         '최고 한도': data['max_limit'],
         '기타 유의사항': data['etc_note']
       }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const addSavingUser = function () {
+  axios({
+    method: 'post',
+    url: `${userStore.API_URL}/financial/saving_list/${selectedSavingCode.value}/contract/`,
+    headers: {
+      Authorization: `Token ${userStore.token}`
+    }
+  })
+    .then((res) => {
+      userStore.getUserInfo(userStore.userInfo.username)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const deleteSavingUser = function () {
+  axios({
+    method: 'delete',
+    url: `${userStore.API_URL}/financial/saving_list/${selectedSavingCode.value}/contract/`,
+    headers: {
+      Authorization: `Token ${userStore.token}`
+    }
+  })
+    .then((res) => {
+      userStore.getUserInfo(userStore.userInfo.username)
     })
     .catch((err) => {
       console.log(err)
@@ -157,8 +196,16 @@ const getSaving = function () {
         <v-card-title class="d-flex align-center justify-space-between">
           <h3>{{ selectedSaving['금융 상품명'] }}</h3>
           <v-btn
+            v-if="isContractSaving"
+            color="red"
+            variant="flat"
+            @click.prevent="deleteSavingUser"
+          >가입 취소하기</v-btn>
+          <v-btn
+            v-else
             color="#1089FF"
             variant="flat"
+            @click.prevent="addSavingUser"
           >가입하기</v-btn>
         </v-card-title>
 

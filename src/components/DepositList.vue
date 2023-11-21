@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import axios from 'axios'
 
@@ -23,10 +22,16 @@ const selectedBank = ref('전체 보기')
 const selectedRow = ref()
 const selectedDepositSimple = ref()
 const selectedDeposit = ref()
+const selectedDepositCode = computed(() => {
+  return selectedDepositSimple.value?.['deposit_code']
+})
 const dialog = ref(false)
 
+const isContractDeposit = computed(() => {
+  return userStore.userInfo?.contract_deposit.some(e => e['deposit_code'] === selectedDepositCode.value)
+})
+
 const userStore = useUserStore()
-const router = useRouter()
 
 const makeItems = function (item) {
   const result = {
@@ -115,10 +120,9 @@ const clickRow = function (data) {
 }
 
 const getDeposit = function () {
-  const depositCode = selectedDepositSimple.value['deposit_code']
   axios({
     method: 'get',
-    url: `${userStore.API_URL}/financial/deposit_list/${depositCode}/`
+    url: `${userStore.API_URL}/financial/deposit_list/${selectedDepositCode.value}/`
   })
     .then((res) => {
       const data = res.data
@@ -134,6 +138,38 @@ const getDeposit = function () {
         '최고 한도': data['max_limit'],
         '기타 유의사항': data['etc_note']
       }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const addDepositUser = function () {
+  axios({
+    method: 'post',
+    url: `${userStore.API_URL}/financial/deposit_list/${selectedDepositCode.value}/contract/`,
+    headers: {
+      Authorization: `Token ${userStore.token}`
+    }
+  })
+    .then((res) => {
+      userStore.getUserInfo(userStore.userInfo.username)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const deleteDepositUser = function () {
+  axios({
+    method: 'delete',
+    url: `${userStore.API_URL}/financial/deposit_list/${selectedDepositCode.value}/contract/`,
+    headers: {
+      Authorization: `Token ${userStore.token}`
+    }
+  })
+    .then((res) => {
+      userStore.getUserInfo(userStore.userInfo.username)
     })
     .catch((err) => {
       console.log(err)
@@ -161,13 +197,17 @@ const getDeposit = function () {
         <v-card-title class="d-flex align-center justify-space-between">
           <h3>{{ selectedDeposit['금융 상품명'] }}</h3>
           <v-btn
-            color="#1089FF"
-            variant="flat"
-          >가입하기</v-btn>
-          <v-btn
+            v-if="isContractDeposit"
             color="red"
             variant="flat"
+            @click.prevent="deleteDepositUser"
           >가입 취소하기</v-btn>
+          <v-btn
+            v-else
+            color="#1089FF"
+            variant="flat"
+            @click.prevent="addDepositUser"
+          >가입하기</v-btn>
         </v-card-title>
 
         <v-card-text>
