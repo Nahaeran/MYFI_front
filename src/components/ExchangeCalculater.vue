@@ -51,7 +51,15 @@ watch(selectedCurrency, () => {
     selectedTts.value = Number(selectedInfo['tts'].replaceAll(',', ''))
     selectedDeal.value = Number(selectedInfo['deal_bas_r'].replaceAll(',', ''))
   }
-  krwInput.value = otherInput.value = ''
+  if (selectedState.value === '송금 받으실 때') {
+    calculateVariable.value = selectedTtb.value
+  } else if (selectedState.value === '송금 보내실 때') {
+    calculateVariable.value = selectedTts.value
+  } else {
+    calculateVariable.value = selectedDeal.value
+  }
+  inputEventOther()
+  // krwInput.value = otherInput.value = ''
 })
 
 watch(selectedState, () => {
@@ -62,18 +70,22 @@ watch(selectedState, () => {
   } else {
     calculateVariable.value = selectedDeal.value
   }
-  console.log(calculateVariable.value)
   inputEventOther()
 })
 
+const roundToTwo = (num) => {
+  return +(Math.round(num + 'e+2') + 'e-2')
+}
+
 const inputEventKrw = function () {
   otherInput.value = krwInput.value / calculateVariable.value
-  otherInput.value = otherInput.value.toFixed(2)
+  otherInput.value = Math.
+  otherInput.value = roundToTwo(otherInput.value)
 }
 
 const inputEventOther = function () {
   krwInput.value = otherInput.value * calculateVariable.value
-  krwInput.value = krwInput.value.toFixed(2)
+  krwInput.value = roundToTwo(krwInput.value)
 }
 </script>
 
