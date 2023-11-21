@@ -19,7 +19,6 @@ const depositLength = computed(() => {
 })
 const banks = ref(['전체 보기'])
 const selectedBank = ref('전체 보기')
-const selectedRow = ref()
 const selectedDepositSimple = ref()
 const selectedDeposit = ref()
 const selectedDepositCode = computed(() => {
@@ -244,7 +243,6 @@ const deleteDepositUser = function () {
       item-value="deposit_code"
       height="600"
       class="table"
-      v-model="selectedRow"
     >
       <template v-slot:item="{ item }">
         <tr @click="clickRow(item)">
