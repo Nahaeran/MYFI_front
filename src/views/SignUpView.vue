@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useUserStore } from '@/stores/users'
 import { useVuelidate } from '@vuelidate/core'
-import { email, required, minLength, maxLength, sameAs, helpers } from '@vuelidate/validators'
+import { email, required, minLength, maxLength, alphaNum, sameAs, helpers } from '@vuelidate/validators'
 
 const userStore = useUserStore()
 
@@ -37,6 +37,7 @@ const state = ref({
 const rules = {
   username: { 
     required: helpers.withMessage('필수 정보입니다.', required),
+    alphaNum: helpers.withMessage('영어 대소문자와 숫자만 입력가능합니다.', alphaNum),
     minLength: helpers.withMessage('5자 이상 입력해야합니다.', minLength(5)),
     maxLength: helpers.withMessage('20자 이하로 입력해야합니다.', maxLength(20))
   },
