@@ -5,12 +5,14 @@ import axios from 'axios'
 
 const currencies = ref()
 const response = ref()
-const selectedState = ref('ttb')
+const selectedState = ref('송금 받으실 때')
 const selectedCurrency = ref('미국 달러')
 const selectedCurrencyUnit = ref('USD')
 const selectedTtb = ref() // ttb: 송금 받으실 때
 const selectedTts = ref() // tts: 송금 보내실 때
 const selectedDeal = ref() // deal_bas_r : 매매 기준율
+
+const calculateVariable = ref()
 const krwInput = ref()
 const otherInput = ref()
 
@@ -32,6 +34,7 @@ onMounted(() => {
       selectedTts.value = Number(usdInfo['tts'].replaceAll(',', ''))
       selectedDeal.value = Number(usdInfo['deal_bas_r'].replaceAll(',', ''))
       // console.log(selectedTtb.value, selectedTts.value, selectedDeal.value)
+      calculateVariable.value = selectedTtb.value
     })
 })
 
@@ -51,13 +54,25 @@ watch(selectedCurrency, () => {
   krwInput.value = otherInput.value = ''
 })
 
+watch(selectedState, () => {
+  if (selectedState.value === '송금 받으실 때') {
+    calculateVariable.value = selectedTtb.value
+  } else if (selectedState.value === '송금 보내실 때') {
+    calculateVariable.value = selectedTts.value
+  } else {
+    calculateVariable.value = selectedDeal.value
+  }
+  console.log(calculateVariable.value)
+  inputEventOther()
+})
+
 const inputEventKrw = function () {
-  otherInput.value = krwInput.value / selectedTtb.value
+  otherInput.value = krwInput.value / calculateVariable.value
   otherInput.value = otherInput.value.toFixed(2)
 }
 
 const inputEventOther = function () {
-  krwInput.value = otherInput.value * selectedTtb.value
+  krwInput.value = otherInput.value * calculateVariable.value
   krwInput.value = krwInput.value.toFixed(2)
 }
 </script>
@@ -67,13 +82,14 @@ const inputEventOther = function () {
     <v-form>
       <v-container>
         <v-row>
-          <v-col cols="3">
+          <v-col cols="3" offset="9">
             <v-select
               color="#1089FF"
               variant="outlined"
               :items="states"
               density="compact"
               label="기준"
+              v-model="selectedState"
             ></v-select>
           </v-col>
         </v-row>

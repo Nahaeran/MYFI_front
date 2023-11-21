@@ -115,7 +115,7 @@ const getSaving = function () {
   const savingCode = selectedSavingSimple.value['saving_code']
   axios({
     method: 'get',
-    url: `${userStore.API_URL}/financial/deposit_list/${savingCode}/`
+    url: `${userStore.API_URL}/financial/saving_list/${savingCode}/`
   })
     .then((res) => {
       const data = res.data
