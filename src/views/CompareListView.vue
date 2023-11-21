@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <header class="d-flex align-center mb-7">
       <RouterLink :to="{ name: 'depositList'}" exact-active-class="active">정기예금</RouterLink>
       <p>|</p>
@@ -15,7 +15,7 @@
 
 <style scoped>
 .container {
-  width: 1000px;
+  width: 1440px;
   margin: 2rem auto;
 }
 
