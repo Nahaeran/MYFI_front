@@ -103,6 +103,10 @@ const createComment = function () {
     .then((res) => {
       comments.value.push(res.data)
       commentContent.value = ''
+      setTimeout(() => {
+        window.scrollTo({ left: 0, top: document.body.scrollHeight+100, behavior: "smooth" });
+      }, 200)
+      
     })
     .catch((err) => {
       console.log(err)

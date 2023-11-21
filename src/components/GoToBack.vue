@@ -4,8 +4,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 const clickBack = function () {
-  router.push({ name: 'postList'})
-  // router.go(-1)
+  router.go(-1)
 }
 </script>
 

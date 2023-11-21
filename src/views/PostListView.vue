@@ -31,7 +31,6 @@ onMounted(() => {
     <v-table class="table">
       <thead>
         <tr>
-          <!-- <th style="border-color: #e6f1fd;" class="text-left pl-10"> -->
           <th class="text-left pl-15">
             제목
           </th>

@@ -1,11 +1,10 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useUserStore } from '@/stores/users'
 
 export const usePostStore = defineStore('posts', () => {
-  const router = useRouter()
   const posts = ref([])
   const userStore = useUserStore()
   
@@ -15,7 +14,7 @@ export const usePostStore = defineStore('posts', () => {
       url: `${userStore.API_URL}/posts/`
     })
       .then((res) => {
-        posts.value = res.data
+        posts.value = res.data.results
       })
       .catch((err) => {
         console.log(err)

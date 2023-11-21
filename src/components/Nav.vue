@@ -67,6 +67,7 @@ const userStore = useUserStore()
             <div class="mx-auto text-center">
               <v-avatar size="large">
                 <v-img
+                  cover
                   id="img"
                   :src="`${userStore.API_URL}${userStore.userInfo.profile_img}`"
                   alt="profile-img"
