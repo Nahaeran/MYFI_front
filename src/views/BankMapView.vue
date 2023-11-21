@@ -3,7 +3,7 @@ import Map from '@/components/Map.vue'
 </script>
 
 <template>
-  <div>
+  <div class="container">
     <h1>주변 은행 검색</h1>
     <v-container>
       <v-row>
@@ -43,12 +43,15 @@ import Map from '@/components/Map.vue'
     </v-container>
     
     <Map
-      :width="1000"
+      :width="1200"
       :height="600"
     />
   </div>
 </template>
 
 <style scoped>
-
+.container {
+  width: 1200px;
+  margin: 2rem auto;
+}
 </style>

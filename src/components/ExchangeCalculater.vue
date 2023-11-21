@@ -5,6 +5,7 @@ import axios from 'axios'
 
 const currencies = ref()
 const response = ref()
+const selectedState = ref('ttb')
 const selectedCurrency = ref('미국 달러')
 const selectedCurrencyUnit = ref('USD')
 const selectedTtb = ref() // ttb: 송금 받으실 때
@@ -12,6 +13,8 @@ const selectedTts = ref() // tts: 송금 보내실 때
 const selectedDeal = ref() // deal_bas_r : 매매 기준율
 const krwInput = ref()
 const otherInput = ref()
+
+const states = ['송금 받으실 때', '송금 보내실 때', '매매 기준율']
 
 const userStore = useUserStore()
 
@@ -22,7 +25,6 @@ onMounted(() => {
   })
     .then((res) => {
       response.value = res.data.filter(data => data['ttb'] !== '0')
-      console.log(response.value)
 
       currencies.value = response.value.map(item => item['cur_nm'])
       const usdInfo = response.value.find(item => item['cur_nm'] === '미국 달러')
@@ -52,13 +54,11 @@ watch(selectedCurrency, () => {
 const inputEventKrw = function () {
   otherInput.value = krwInput.value / selectedTtb.value
   otherInput.value = otherInput.value.toFixed(2)
-  console.log(krwInput.value, otherInput.value)
 }
 
 const inputEventOther = function () {
   krwInput.value = otherInput.value * selectedTtb.value
   krwInput.value = krwInput.value.toFixed(2)
-  console.log(krwInput.value, otherInput.value)
 }
 </script>
 
@@ -66,6 +66,18 @@ const inputEventOther = function () {
   <v-card>
     <v-form>
       <v-container>
+        <v-row>
+          <v-col cols="3">
+            <v-select
+              color="#1089FF"
+              variant="outlined"
+              :items="states"
+              density="compact"
+              label="기준"
+            ></v-select>
+          </v-col>
+        </v-row>
+
         <v-row no-gutter>
           <v-col cols="3">
             <v-select
@@ -87,7 +99,8 @@ const inputEventOther = function () {
             ></v-text-field>
           </v-col>
         </v-row>
-        <v-row>
+
+        <v-row class="my-0">
           <v-text-field
             type="number"
             append-inner-icon="mdi-currency-krw"
@@ -99,9 +112,9 @@ const inputEventOther = function () {
             @input="inputEventKrw"
           ></v-text-field>
         </v-row>
-        <v-row>
+        <!-- <v-row>
           <p class="text-caption mx-3 mb-3">* 엔화, 인도네시아 루피아는 100 단위, 나머지는 모두 1 단위입니다.</p>
-        </v-row>
+        </v-row> -->
       </v-container>
     </v-form>    
   </v-card>

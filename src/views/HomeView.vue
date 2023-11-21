@@ -1,5 +1,6 @@
 <script setup>
 import Map from '@/components/Map.vue'
+import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
 </script>
 
 <template>
@@ -68,10 +69,15 @@ import Map from '@/components/Map.vue'
     </v-carousel>
   </div>
 
-  <Map 
-    :width="350"
-    :height="500"
-  />
+  <div class="container d-flex justify-space-between">
+    <!-- <ExchangeCalculater /> -->
+    <Map 
+      :width="350"
+      :height="500"
+    />
+  </div>
+
+  
 </template>
 
 <style scoped>
@@ -124,5 +130,10 @@ import Map from '@/components/Map.vue'
   .caro-item-text {
     left: 20vw;
   }
+}
+
+.container {
+  width: 1400px;
+  margin: 2rem auto;
 }
 </style>
