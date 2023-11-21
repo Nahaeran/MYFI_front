@@ -196,18 +196,20 @@ const deleteDepositUser = function () {
       <v-card v-if="selectedDeposit" class="py-5 px-3">
         <v-card-title class="d-flex align-center justify-space-between">
           <h3>{{ selectedDeposit['금융 상품명'] }}</h3>
-          <v-btn
-            v-if="isContractDeposit"
-            color="red"
-            variant="flat"
-            @click.prevent="deleteDepositUser"
-          >가입 취소하기</v-btn>
-          <v-btn
-            v-else
-            color="#1089FF"
-            variant="flat"
-            @click.prevent="addDepositUser"
-          >가입하기</v-btn>
+          <div v-if="userStore.isLogin">
+            <v-btn
+              v-if=" isContractDeposit"
+              color="red"
+              variant="flat"
+              @click.prevent="deleteDepositUser"
+            >가입 취소하기</v-btn>
+            <v-btn
+              v-else
+              color="#1089FF"
+              variant="flat"
+              @click.prevent="addDepositUser"
+            >가입하기</v-btn>
+          </div>
         </v-card-title>
 
         <v-card-text>
