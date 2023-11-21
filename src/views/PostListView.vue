@@ -50,6 +50,7 @@ onMounted(() => {
           <td width="25%" class="text-left">
             <v-avatar size="small">
                 <v-img
+                  cover
                   id="img"
                   :src="`${userStore.API_URL}${post.user.profile_img}`"
                   alt="profile-img"

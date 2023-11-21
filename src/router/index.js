@@ -1,7 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import HomeView from '@/views/HomeView.vue'
-import DepositListView from '@/views/DepositListView.vue'
+import CompareListView from '@/views/CompareListView.vue'
+import DepositList from '@/components/DepositList.vue'
+import SavingList from '@/components/SavingList.vue'
 import ExchangeView from '@/views/ExchangeView.vue'
 import BankMapView from '@/views/BankMapView.vue'
 import PostListView from '@/views/PostListView.vue'
@@ -25,9 +27,20 @@ const router = createRouter({
       component: HomeView
     },
     {
-      path: '/compare/deposit',
-      name: 'depositList',
-      component: DepositListView
+      path: '/compare',
+      component: CompareListView,
+      children: [
+        {
+          path: 'deposit',
+          name: 'depositList',
+          component: DepositList
+        },
+        {
+          path: 'saving',
+          name: 'savingList',
+          component: SavingList
+        },
+      ]
     },
     {
       path: '/exchange',

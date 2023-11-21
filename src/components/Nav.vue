@@ -52,6 +52,7 @@ const userStore = useUserStore()
           <v-btn icon v-bind="props">
             <v-avatar>
               <v-img
+                cover
                 id="img"
                 :src="`${userStore.API_URL}${userStore.userInfo.profile_img}`"
                 alt="profile-img"

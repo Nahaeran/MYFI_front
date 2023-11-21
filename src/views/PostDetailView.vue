@@ -173,6 +173,7 @@ const save = function () {
             <p class="mr-2 text-caption">작성자 :</p>
             <v-avatar size="x-small">
               <v-img
+                cover
                 :src="`${userStore.API_URL}${post.user.profile_img}`"
                 alt="profile-img"
               ></v-img>
@@ -277,6 +278,7 @@ const save = function () {
         <div class="upper d-flex align-center mb-2">
           <v-avatar size="x-small">
             <v-img
+              cover
               :src="`${userStore.API_URL}${comment.user.profile_img}`"
               alt="profile-img"
             ></v-img>
