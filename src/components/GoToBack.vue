@@ -3,8 +3,13 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
+const props = defineProps({
+  goName: Object
+})
+
 const clickBack = function () {
-  router.go(-1)
+  // router.go(-1)
+  router.push(props.goName)
 }
 </script>
 

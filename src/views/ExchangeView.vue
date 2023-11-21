@@ -13,6 +13,7 @@ import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
 <style scoped>
 .container {
   width: 1000px;
+  height: 80vh;
   margin: 2rem auto;
 }
 </style>

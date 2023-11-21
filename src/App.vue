@@ -1,5 +1,6 @@
 <script setup>
 import Nav from '@/components/Nav.vue'
+import Footer from '@/components/Footer.vue'
 </script>
 
 <template>
@@ -9,6 +10,7 @@ import Nav from '@/components/Nav.vue'
       <div class="hr"></div>
     </header>
     <RouterView />
+    <Footer />
   </div>
 </template>
 

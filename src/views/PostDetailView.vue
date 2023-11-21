@@ -168,7 +168,7 @@ const save = function () {
 <template>
   <div>
     <div v-if="post" class="container">
-      <GoToBack />
+      <GoToBack :goName="{ name: 'postList' }" />
       <header>
         <p class="text-subtitle-2">{{ post.id }}번째 게시물</p>
         <div class="d-flex justify-space-between align-center">

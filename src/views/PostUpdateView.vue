@@ -77,7 +77,7 @@ const updatePost = function () {
 
 <template>
   <div class="container">
-    <GoToBack />
+    <GoToBack  :goName="{ name: 'postDetail', params: { id: postId }}"/>
     <h1>게시글 수정하기</h1>
     <v-form class="my-5" @submit.prevent="updatePost">
       <v-text-field

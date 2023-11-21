@@ -151,6 +151,7 @@ const getDeposit = function () {
         :items="banks"
         v-model="selectedBank"
         @update:modelValue="clickBank"
+        class="ml-auto"
       ></v-select>
     </header>
     <v-divider class="my-3"></v-divider>
@@ -163,6 +164,10 @@ const getDeposit = function () {
             color="#1089FF"
             variant="flat"
           >가입하기</v-btn>
+          <v-btn
+            color="red"
+            variant="flat"
+          >가입 취소하기</v-btn>
         </v-card-title>
 
         <v-card-text>
