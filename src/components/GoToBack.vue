@@ -5,6 +5,7 @@ const router = useRouter()
 
 const clickBack = function () {
   router.push({ name: 'postList'})
+  // router.go(-1)
 }
 </script>
 

@@ -4,6 +4,8 @@ import HomeView from '@/views/HomeView.vue'
 import CompareListView from '@/views/CompareListView.vue'
 import DepositList from '@/components/DepositList.vue'
 import SavingList from '@/components/SavingList.vue'
+import DepositDetail from '@/components/DepositDetail.vue'
+import SavingDetail from '@/components/SavingDetail.vue'
 import ExchangeView from '@/views/ExchangeView.vue'
 import BankMapView from '@/views/BankMapView.vue'
 import PostListView from '@/views/PostListView.vue'
@@ -33,14 +35,24 @@ const router = createRouter({
         {
           path: 'deposit',
           name: 'depositList',
-          component: DepositList
+          component: DepositList,
         },
         {
           path: 'saving',
           name: 'savingList',
-          component: SavingList
+          component: SavingList,
         },
       ]
+    },
+    {
+      path: '/compare/deposit/:depositCode',
+      name: 'depositDetail',
+      component: DepositDetail
+    },
+    {
+      path: '/compare/saving/:savingCode',
+      name: 'savingDetail',
+      component: SavingDetail
     },
     {
       path: '/exchange',

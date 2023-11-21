@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import axios from 'axios'
-import { computed } from '@vue/reactivity';
 
 const headers = [
   { title: '공시 제출일', align: 'start', sortable: false, key: 'dcls_month' },
@@ -20,8 +20,10 @@ const depositLength = computed(() => {
 })
 const banks = ref(['전체 보기'])
 const selectedBank = ref('전체 보기')
+const selectedRow = ref()
 
 const userStore = useUserStore()
+const router = useRouter()
 
 const makeItems = function (item) {
   const result = {
@@ -93,7 +95,10 @@ const clickBank = function () {
         console.log(err)
       })
   }
-  
+}
+
+const clickRow = function (data) {
+  router.push({ name: 'depositDetail', params: { depositCode: data['deposit_code']}})
 }
 
 </script>
@@ -111,23 +116,29 @@ const clickBank = function () {
     </header>
     <v-divider class="my-3"></v-divider>
 
-    <!-- <v-data-table-server
-      v-if="depositLength !== 0"
-      :headers="headers"
-      :items-length="depositLength"
-      :items="deposits"
-      item-value="deposit_code"
-      height="600"
-    ></v-data-table-server> -->
     <v-data-table-virtual
       v-if="depositLength !== 0"
+      fixed-header
       :headers="headers"
       :items-length="depositLength"
       :items="deposits"
       item-value="deposit_code"
       height="600"
       class="table"
-    ></v-data-table-virtual>
+      v-model="selectedRow"
+    >
+      <template v-slot:item="{ item }">
+        <tr @click="clickRow(item)">
+          <td>{{ item['dcls_month'] }}</td>
+          <td>{{ item['kor_co_nm'] }}</td>
+          <td>{{ item['name'] }}</td>
+          <td>{{ item['6month'] }}</td>
+          <td>{{ item['12month'] }}</td>
+          <td>{{ item['24month'] }}</td>
+          <td>{{ item['36month'] }}</td>
+        </tr>
+      </template>
+    </v-data-table-virtual>
     
     <div v-else class="loading">
       <v-progress-circular
@@ -145,6 +156,11 @@ const clickBank = function () {
   height: 80vh;
   align-items: center;
   justify-content: center;
+}
+
+tbody > tr {
+  transition: 200ms;
+  cursor: pointer;
 }
 
 tbody > tr:hover {
