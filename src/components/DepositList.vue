@@ -120,6 +120,8 @@ const close = function () {
 
 const clickRow = function (data) {
   selectedDepositSimple.value = data
+  intrRate.value = []
+  intrRate2.value = []
   getDeposit()
   dialog.value = true
 }

@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/users'
+import BarChartDetail from '@/components/BarChartDetail.vue'
 import axios from 'axios'
 
 const headers = [
@@ -27,6 +28,12 @@ const selectedSavingCode = computed(() => {
   return selectedSavingSimple.value?.['saving_code']
 })
 const dialog = ref(false)
+
+const averageIntrRate = [2.78, 3.62, 3.57, 3.52]
+const intrRateF = ref([null, null, null, null])
+const intrRate2F = ref([null, null, null, null])
+const intrRateS = ref([null, null, null, null])
+const intrRate2S = ref([null, null, null, null])
 
 const selectedTypeRsrv = ref('자유적립식')
 
@@ -130,6 +137,10 @@ const close = function () {
 const clickRow = function (data) {
   // router.push({ name: 'savingDetail', params: { savingCode: data['saving_code']}})
   selectedSavingSimple.value = data
+  intrRateF.value = []
+  intrRate2F.value = []
+  intrRateS.value = []
+  intrRate2S.value = []
   getSaving()
   dialog.value = true
 }
@@ -154,6 +165,41 @@ const getSaving = function () {
         '최고 한도': data['max_limit'],
         '기타 유의사항': data['etc_note']
       }
+
+      const optionList = res.data.savingoption_set
+
+      for (const option of optionList) {
+        if (option.rsrv_type_nm === '자유적립식') {
+          if (option.save_trm === "6") {
+            intrRateF.value[0] = option.intr_rate
+            intrRate2F.value[0] = option.intr_rate2
+          } else if (option.save_trm === "12") {
+            intrRateF.value[1] = option.intr_rate
+            intrRate2F.value[1] = option.intr_rate2
+          } else if (option.save_trm === "24") {
+            intrRateF.value[2] = option.intr_rate
+            intrRate2F.value[2] = option.intr_rate2
+          } else if (option.save_trm === "36") {
+            intrRateF.value[3] = option.intr_rate
+            intrRate2F.value[3] = option.intr_rate2
+          }
+        } else {
+          if (option.save_trm === "6") {
+            intrRateS.value[0] = option.intr_rate
+            intrRate2S.value[0] = option.intr_rate2
+          } else if (option.save_trm === "12") {
+            intrRateS.value[1] = option.intr_rate
+            intrRate2S.value[1] = option.intr_rate2
+          } else if (option.save_trm === "24") {
+            intrRateS.value[2] = option.intr_rate
+            intrRate2S.value[2] = option.intr_rate2
+          } else if (option.save_trm === "36") {
+            intrRateS.value[3] = option.intr_rate
+            intrRate2S.value[3] = option.intr_rate2
+          }
+        }
+      }
+
     })
     .catch((err) => {
       console.log(err)
@@ -263,6 +309,24 @@ const deleteSavingUser = function () {
               </tr>
             </tbody>
           </v-table>
+          <v-divider class="my-3"></v-divider>
+
+          <div class="mx-auto">
+            <BarChartDetail
+              :title="`${selectedSavingSimple.name} (자유적립식)`"
+              :average-intr-rate="averageIntrRate"
+              :intr-rate="intrRateF"
+              :intr-rate2="intrRate2F"
+            />
+            <BarChartDetail
+              :title="`${selectedSavingSimple.name} (정액적립식)`"
+              :average-intr-rate="averageIntrRate"
+              :intr-rate="intrRateS"
+              :intr-rate2="intrRate2S"
+            />
+            <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+          </div>
+
         </v-card-text>
 
         <v-card-actions>
