@@ -33,8 +33,21 @@ const months = [
 ]
 
 const selectedMonth = ref({ title: '6개월 금리', value: 6 })
+const averageIntrRate = computed(() => {
+  if (selectedMonth.value === 6) {
+    return 3.45
+  } else if (selectedMonth.value === 12) {
+    return 4.08
+  } else if (selectedMonth.value === 24) {
+    return 3.4
+  } else if (selectedMonth.value === 36) {
+    return 3.35
+  } else {
+    return 3.45
+  }
+})
 
-const labels = ref([])
+const labels = ref(['평균 금리'])
 const filterLabels = function () {
   for (const product of products.value) {
     labels.value.push(product.name)
@@ -43,9 +56,9 @@ const filterLabels = function () {
 watch(products, () => {
   chartReady.value = false
   loading.value = true
-  labels.value = []
-  intrRate.value = []
-  intrRate2.value = []
+  labels.value = ['평균 금리']
+  intrRate.value = [averageIntrRate.value]
+  intrRate2.value = [undefined]
   setTimeout(() => {
     Promise.all([changeMonth(), filterLabels()])
       .then((values) => {
@@ -55,8 +68,8 @@ watch(products, () => {
   }, 300);
 })
 
-const intrRate = ref([])
-const intrRate2 = ref([])
+const intrRate = ref([averageIntrRate.value])
+const intrRate2 = ref([undefined])
 
 const changeMonth = function () {
   const filteredProduct = products.value.map(e => {
@@ -73,9 +86,10 @@ const changeMonth = function () {
 watch(selectedMonth, () => {
   chartReady.value = false
   loading.value = true
-  labels.value = []
-  intrRate.value = []
-  intrRate2.value = []
+  labels.value = ['평균 금리']
+
+  intrRate.value = [averageIntrRate.value]
+  intrRate2.value = [undefined]
   setTimeout(() => {
     Promise.all([changeMonth(), filterLabels()])
       .then((values) => {
@@ -323,12 +337,14 @@ const deleteProductUser = function (data) {
         </v-col>
         <v-col v-if="chartReady" cols="9">
           <BarChart
+            :selected-month="selectedMonth"
             :labels="labels"
             :intr-rate="intrRate"
             :intr-rate2="intrRate2"
           />
+          <p class="text-caption">* 개월별 평균 금리는 2023년 11월 기준입니다.</p>
         </v-col>
-        <v-col v-else cols="9" style="height: 385px;">
+        <v-col v-else cols="9" style="height: 405px;">
 
         </v-col>
       </v-row>
