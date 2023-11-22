@@ -25,7 +25,7 @@ const userStore = useUserStore()
         주변은행
       </RouterLink>
       <p>|</p>
-      <RouterLink :to="{ name: 'postList' }">
+      <RouterLink :to="{ name: 'postList', query: { page: 1 } }">
         커뮤니티
       </RouterLink>
     </div>

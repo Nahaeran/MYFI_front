@@ -1,26 +1,35 @@
 <script setup>
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { usePostStore } from '@/stores/posts'
 import { useUserStore } from '@/stores/users'
 
 const postStore = usePostStore()
 const userStore = useUserStore()
+const route = useRoute()
 const router = useRouter()
 
+const queryPage = route.query?.page
+const page = ref(Number(queryPage))
+
+watch(page, () => {
+  postStore.getPosts(page.value)
+  router.push({ name: 'postList', query: { page: page.value }})
+})
+
 const clickTr = (postId) => {
-  router.push({ name: 'postDetail', params: {id: postId}})
+  router.push({ name: 'postDetail', params: {id: postId }, query: { page: page.value }})
 }
 
 onMounted(() => {
-  postStore.getPosts()
+  postStore.getPosts(page.value)
 })
 </script>
 
 <template>
   <div class="container">
     <div class="d-flex justify-space-between align-end">
-      <h1>금융 상품 <span class="color">후기</span> 게시판</h1>
+      <h1><span class="color">자유</span> 게시판</h1>
       <v-btn
         v-if="userStore.isLogin"
         variant="flat"
@@ -60,7 +69,8 @@ onMounted(() => {
       </tbody>
     </v-table>
     <v-pagination
-      :length="15"
+      v-model="page"
+      :length="postStore.totalPage"
       :total-visible="6"
       color="#1089FF"
       rounded="circle"

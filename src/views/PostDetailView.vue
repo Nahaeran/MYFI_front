@@ -8,6 +8,7 @@ import axios from 'axios'
 const route = useRoute()
 const postId = route.params.id
 const router = useRouter()
+const page = route.query.page
 
 const post = ref()
 const comments = ref()
@@ -168,7 +169,7 @@ const save = function () {
 <template>
   <div>
     <div v-if="post" class="container">
-      <GoToBack :goName="{ name: 'postList' }" />
+      <GoToBack :goName="{ name: 'postList', query: { page: page } }" />
       <header>
         <p class="text-subtitle-2">{{ post.id }}번째 게시물</p>
         <div class="d-flex justify-space-between align-center">
