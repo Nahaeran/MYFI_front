@@ -13,6 +13,13 @@ const selectedKey = ref('')
 const state = ref({
   updateValue: ''
 })
+const selectedMonth = ref()
+const months = [
+  { title: '6개월', value: 6 },
+  { title: '12개월', value: 12 },
+  { title: '24개월', value: 24 },
+  { title: '36개월', value: 36 },
+]
 
 const userStore = useUserStore()
 const usernameTemp = userStore.userInfo.username
@@ -27,19 +34,23 @@ const rules = {
 const v$ = useVuelidate(rules, state)
 
 onMounted(() => {
+  const storeUserInfo = userStore.userInfo
   userInfo.value = {
-    '회원번호': userStore.userInfo.id,
-    '아이디': userStore.userInfo.username,
-    '이름': userStore.userInfo.name,
-    '이메일': userStore.userInfo.email,
-    '나이': userStore.userInfo.age,
-    '현재 가진 금액': userStore.userInfo.money,
-    '연봉': userStore.userInfo.salary,
+    '회원번호': storeUserInfo.id,
+    '아이디': storeUserInfo.username,
+    '이름': storeUserInfo.name,
+    '이메일': storeUserInfo.email,
+    '나이': storeUserInfo.age,
+    '자산': storeUserInfo.money,
+    '연봉': storeUserInfo.salary,
+    '예금 희망 금액': storeUserInfo.desire_amount_deposit,
+    '예금 희망 기간 (월)': storeUserInfo.deposit_period,
+    '월 적금 희망 금액': storeUserInfo.desire_amount_saving,
+    '적금 희망 기간 (월)': storeUserInfo.saving_period,
   }
 })
 
 const editValue = function (key, value) {
-  console.log(key, value)
   selectedKey.value = key
   state.value.updateValue = userInfo.value[key]
   dialog.value = true
@@ -52,14 +63,25 @@ const close = function () {
 const save = function () {
   v$.value.$validate()
 
-  if (!v$.value.$error) {
+  if (!v$.value.$error || selectedKey.value === '예금 희망 금액' || selectedKey.value === '적금 희망 기간 (월)') {
     const key = ref('')
+    const body = ref(state.value.updateValue)
     if (selectedKey.value === '나이') {
       key.value = 'age'
-    } else if (selectedKey.value === '현재 가진 금액') {
+    } else if (selectedKey.value === '자산') {
       key.value = 'money'
     } else if (selectedKey.value === '연봉') {
       key.value = 'salary'
+    } else if (selectedKey.value === '예금 희망 금액') {
+      key.value = 'desire_amount_deposit'
+    } else if (selectedKey.value === '예금 희망 기간 (월)') {
+      key.value = 'deposit_period'
+      body.value = selectedMonth.value
+    } else if (selectedKey.value === '월 적금 희망 금액') {
+      key.value = 'desire_amount_saving'
+    } else if (selectedKey.value === '적금 희망 기간 (월)') {
+      key.value = 'saving_period'
+      body.value = selectedMonth.value
     }
 
     axios({
@@ -69,12 +91,12 @@ const save = function () {
         Authorization: `Token ${userStore.token}`
       },
       data: {
-        [key.value]: state.value.updateValue
+        [key.value]: body.value
       }
     })
       .then((res) => {
         userStore.getUserInfo(usernameTemp)
-        userInfo.value[selectedKey.value] = state.value.updateValue
+        userInfo.value[selectedKey.value] = body.value
         selectedKey.value = state.value.updateValue = ''
         dialog.value = false
       })
@@ -156,9 +178,22 @@ const editProfileImg = function (event) {
               </v-card-title>
 
               <v-card-text>
+                <v-select
+                  v-if="selectedKey === '예금 희망 기간 (월)' || selectedKey === '적금 희망 기간 (월)'"
+                  color="#1089FF"
+                  variant="outlined"
+                  :label="selectedKey"
+                  :items="months"
+                  item-text="title"
+                  item-value="value"
+                  v-model="selectedMonth"
+                ></v-select>
+
                 <v-text-field
+                  v-else
                   type="number"
                   color="#1089FF"
+                  variant="outlined"
                   v-model="state.updateValue"
                   :label="selectedKey"
                   :error-messages="v$.updateValue.$errors.map(e => e.$message)"
@@ -188,7 +223,7 @@ const editProfileImg = function (event) {
               <td>{{ value }}</td>
               <td>
                 <v-icon
-                  v-if="key === '나이' || key === '현재 가진 금액' || key === '연봉'"
+                  v-if="key !== '회원번호' && key !== '아이디' && key !== '이름' && key !== '이메일'"
                   size="small"
                   class="me-2"
                   @click="editValue(key, value)"
