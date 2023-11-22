@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useUserStore } from '@/stores/users'
 import BarChart from '@/components/BarChart.vue'
+import BarChartDetail from '@/components/BarChartDetail.vue'
 import axios from 'axios'
 
 const userStore = useUserStore()
@@ -10,6 +11,7 @@ const products = ref([])
 const dialog = ref(false)
 const loading = ref(true)
 const chartReady = ref(false)
+const isDeposit = ref(false)
 
 const selectedProduct = ref()
 const selectedProductSimple = ref()
@@ -23,6 +25,17 @@ const isContractProduct = computed(() => {
     return userStore.userInfo?.contract_saving.some(e => e['saving_code'] === selectedProductCode.value)
   }
 })
+
+const averageIntrRateDeposit = [3.45, 4.08, 3.4, 3.35]
+const intrRateDeposit = ref([null, null, null, null])
+const intrRate2Deposit = ref([null, null, null, null])
+
+const averageIntrRateSaving = [2.78, 3.62, 3.57, 3.52]
+const intrRateF = ref([null, null, null, null])
+const intrRate2F = ref([null, null, null, null])
+const intrRateS = ref([null, null, null, null])
+const intrRate2S = ref([null, null, null, null])
+
 
 const months = [
   { title: '6개월 금리', value: 6 }, 
@@ -171,15 +184,22 @@ const close = function () {
 
 const clickDetail = function (data) {
   selectedProductSimple.value = data
+  isDeposit.value = data.type === '정기예금' ? true : false
+  intrRateDeposit.value = []
+  intrRate2Deposit.value = []
+  intrRateF.value = []
+  intrRate2F.value = []
+  intrRateS.value = []
+  intrRate2S.value = []
   getProduct()
   dialog.value = true
 }
 
 const getProduct = function () {
   let url = ''
-  if (selectedProductSimple.value.type === '정기예금') {
+  if (isDeposit.value) {
     url = `${userStore.API_URL}/financial/deposit_list/${selectedProductCode.value}/`
-  } else if (selectedProductSimple.value.type === '정기적금'){
+  } else {
     url = `${userStore.API_URL}/financial/saving_list/${selectedProductCode.value}/`
   }
 
@@ -201,6 +221,60 @@ const getProduct = function () {
         '최고 한도': data['max_limit'],
         '기타 유의사항': data['etc_note']
       }
+
+      if (isDeposit.value) {
+        const optionList = res.data.depositoption_set
+
+        for (const option of optionList) {
+          if (option.save_trm === "6") {
+            intrRateDeposit.value[0] = option.intr_rate
+            intrRate2Deposit.value[0] = option.intr_rate2
+          } else if (option.save_trm === "12") {
+            intrRateDeposit.value[1] = option.intr_rate
+            intrRate2Deposit.value[1] = option.intr_rate2
+          } else if (option.save_trm === "24") {
+            intrRateDeposit.value[2] = option.intr_rate
+            intrRate2Deposit.value[2] = option.intr_rate2
+          } else if (option.save_trm === "36") {
+            intrRateDeposit.value[3] = option.intr_rate
+            intrRate2Deposit.value[3] = option.intr_rate2
+          }
+        }
+      } else {
+        const optionList = res.data.savingoption_set
+
+        for (const option of optionList) {
+          if (option.rsrv_type_nm === '자유적립식') {
+            if (option.save_trm === "6") {
+              intrRateF.value[0] = option.intr_rate
+              intrRate2F.value[0] = option.intr_rate2
+            } else if (option.save_trm === "12") {
+              intrRateF.value[1] = option.intr_rate
+              intrRate2F.value[1] = option.intr_rate2
+            } else if (option.save_trm === "24") {
+              intrRateF.value[2] = option.intr_rate
+              intrRate2F.value[2] = option.intr_rate2
+            } else if (option.save_trm === "36") {
+              intrRateF.value[3] = option.intr_rate
+              intrRate2F.value[3] = option.intr_rate2
+            }
+          } else {
+            if (option.save_trm === "6") {
+              intrRateS.value[0] = option.intr_rate
+              intrRate2S.value[0] = option.intr_rate2
+            } else if (option.save_trm === "12") {
+              intrRateS.value[1] = option.intr_rate
+              intrRate2S.value[1] = option.intr_rate2
+            } else if (option.save_trm === "24") {
+              intrRateS.value[2] = option.intr_rate
+              intrRate2S.value[2] = option.intr_rate2
+            } else if (option.save_trm === "36") {
+              intrRateS.value[3] = option.intr_rate
+              intrRate2S.value[3] = option.intr_rate2
+            }
+          }
+        }
+      }
     })
     .catch((err) => {
       console.log(err)
@@ -213,9 +287,9 @@ const deleteProductUser = function (data) {
   if (anwser) {
     selectedProductSimple.value = data
     let url = ''
-    if (selectedProductSimple.value.type === '정기예금') {
+    if (isDeposit.value) {
       url = `${userStore.API_URL}/financial/deposit_list/${selectedProductCode.value}/contract/`
-    } else if (selectedProductSimple.value.type === '정기적금'){
+    } else {
       url = `${userStore.API_URL}/financial/saving_list/${selectedProductCode.value}/contract/`
     }
 
@@ -276,6 +350,33 @@ const deleteProductUser = function (data) {
               </tr>
             </tbody>
           </v-table>
+          <v-divider class="my-3"></v-divider>
+
+          <div v-if="isDeposit" class="mx-auto">
+            <BarChartDetail
+              :title="selectedProductSimple.name"
+              :average-intr-rate="averageIntrRateDeposit"
+              :intr-rate="intrRateDeposit"
+              :intr-rate2="intrRate2Deposit"
+            />
+            <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+          </div>
+
+          <div v-else class="mx-auto">
+            <BarChartDetail
+              :title="`${selectedProductSimple.name} (자유적립식)`"
+              :average-intr-rate="averageIntrRateSaving"
+              :intr-rate="intrRateF"
+              :intr-rate2="intrRate2F"
+            />
+            <BarChartDetail
+              :title="`${selectedProductSimple.name} (정액적립식)`"
+              :average-intr-rate="averageIntrRateSaving"
+              :intr-rate="intrRateS"
+              :intr-rate2="intrRate2S"
+            />
+            <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+          </div>
         </v-card-text>
 
         <v-card-actions>
