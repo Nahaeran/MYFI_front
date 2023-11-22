@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import axios from 'axios'
@@ -27,6 +27,8 @@ const selectedSavingCode = computed(() => {
 })
 const dialog = ref(false)
 
+const selectedTypeRsrv = ref('자유적립식')
+
 const isContractSaving = computed(() => {
   return userStore.userInfo?.contract_saving.some(e => e['saving_code'] === selectedSavingCode.value)
 })
@@ -48,15 +50,18 @@ const makeItems = function (item) {
 
   for (const option of item['savingoption_set']) {
     const saveTrm = option['save_trm']
+    const rsrvTypeNm = option['rsrv_type_nm']
 
-    if (saveTrm === "6") {
-      result['6month'] = option['intr_rate']
-    } else if (saveTrm === "12") {
-      result['12month'] = option['intr_rate']
-    } else if (saveTrm === "24") {
-      result['24month'] = option['intr_rate']
-    } else if (saveTrm === "36") {
-      result['36month'] = option['intr_rate']
+    if (rsrvTypeNm === selectedTypeRsrv.value) {
+      if (saveTrm === "6") {
+        result['6month'] = option['intr_rate']
+      } else if (saveTrm === "12") {
+        result['12month'] = option['intr_rate']
+      } else if (saveTrm === "24") {
+        result['24month'] = option['intr_rate']
+      } else if (saveTrm === "36") {
+        result['36month'] = option['intr_rate']
+      }
     }
   }
 
@@ -105,6 +110,10 @@ const clickBank = function () {
       })
   }
 }
+
+watch(selectedTypeRsrv, () => {
+  
+})
 
 const close = function () {
   dialog.value = false
@@ -179,14 +188,32 @@ const deleteSavingUser = function () {
 
 <template>
   <div>
-    <header class="d-flex">
+    <header class="d-flex justify-space-between">
       <h1><span class="color">정기적금</span> 검색하기</h1>
-      <v-select
-        label="은행"
-        :items="banks"
-        v-model="selectedBank"
-        @update:modelValue="clickBank"
-      ></v-select>
+      <div class="w-50 d-flex align-center">
+        <v-btn-toggle
+          v-model="selectedTypeRsrv"
+          variant="outlined"
+          color="#1089FF"
+          group
+          class="mb-5 mx-5"
+        >
+          <v-btn value="자유적립식">
+            자유 적금
+          </v-btn>
+          <v-btn value="정액적립식">
+            정기 적금
+          </v-btn>
+        </v-btn-toggle>
+
+        <v-select
+          label="은행"
+          :items="banks"
+          v-model="selectedBank"
+          @update:modelValue="clickBank"
+        ></v-select>
+      </div>
+      
     </header>
     <v-divider class="my-3"></v-divider>
 

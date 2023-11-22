@@ -201,15 +201,18 @@ const deleteDepositUser = function () {
 
 <template>
   <div>
-    <header class="d-flex">
+    <header class="d-flex justify-space-between">
       <h1><span class="color">정기예금</span> 검색하기</h1>
-      <v-select
-        label="은행"
-        :items="banks"
-        v-model="selectedBank"
-        @update:modelValue="clickBank"
-        class="ml-auto"
-      ></v-select>
+      <div class="w-25">
+        <v-select
+          label="은행"
+          :items="banks"
+          v-model="selectedBank"
+          @update:modelValue="clickBank"
+          class="ml-auto"
+        ></v-select>
+      </div>
+      
     </header>
     <v-divider class="my-3"></v-divider>
 
