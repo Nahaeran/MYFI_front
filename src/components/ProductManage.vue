@@ -295,6 +295,7 @@ const deleteProductUser = function (data) {
         </v-col>
         <v-col cols="9" class="d-flex flex-column">
           <p
+            v-if="products.length !== 0"
             v-for="product in products"
             :key="product.code"
             class="mb-2"
@@ -318,6 +319,7 @@ const deleteProductUser = function (data) {
               @click.prevent="deleteProductUser(product)"
             >가입 취소하기</v-btn>
           </p>
+          <p v-else class="mb-15">MIFI에서 가입한 상품이 없습니다! 금리 비교 탭에서 마음에 드는 상품을 선택해보세요 😊</p>
         </v-col>
       </v-row>
 
