@@ -14,6 +14,7 @@ const headers = [
   { title: '36개월 (Click to sort)', align: 'end', width:'12%', key: '36month' },
 ]
 
+const results = ref()
 const savings = ref([])
 const savingLength = computed(() => {
   return savings.value.length
@@ -74,8 +75,8 @@ const getAllSaving = function () {
     url: `${userStore.API_URL}/financial/saving_list/`
   })
     .then((res) => {
-      const results = res.data
-      for (const item of results){
+      results.value = res.data
+      for (const item of results.value){
         savings.value.push(makeItems(item))
         if (!banks.value.includes(item['kor_co_nm'])) {
           banks.value.push(item['kor_co_nm'])
@@ -112,7 +113,14 @@ const clickBank = function () {
 }
 
 watch(selectedTypeRsrv, () => {
-  
+  savings.value = []
+  selectedBank.value = '전체 보기'
+  for (const item of results.value){
+    savings.value.push(makeItems(item))
+    if (!banks.value.includes(item['kor_co_nm'])) {
+      banks.value.push(item['kor_co_nm'])
+    }
+  }
 })
 
 const close = function () {
@@ -162,6 +170,10 @@ const addSavingUser = function () {
   })
     .then((res) => {
       userStore.getUserInfo(userStore.userInfo.username)
+      const answer = window.confirm('저장이 완료되었습니다.\n가입 상품 관리 페이지로 가시겠습니까?')
+      if (answer) {
+        router.push({ name: 'productManage', params: { username: userStore.userInfo.username }})
+      }
     })
     .catch((err) => {
       console.log(err)
@@ -207,6 +219,8 @@ const deleteSavingUser = function () {
         </v-btn-toggle>
 
         <v-select
+          variant="outlined"
+          color="#1089FF"
           label="은행"
           :items="banks"
           v-model="selectedBank"

@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import BarChartDetail from '@/components/BarChartDetail.vue'
 import axios from 'axios'
@@ -36,6 +37,7 @@ const isContractDeposit = computed(() => {
 })
 
 const userStore = useUserStore()
+const router = useRouter()
 
 const makeItems = function (item) {
   const result = {
@@ -117,7 +119,6 @@ const close = function () {
 }
 
 const clickRow = function (data) {
-  // router.push({ name: 'depositDetail', params: { depositCode: data['deposit_code']}})
   selectedDepositSimple.value = data
   getDeposit()
   dialog.value = true
@@ -175,6 +176,10 @@ const addDepositUser = function () {
   })
     .then((res) => {
       userStore.getUserInfo(userStore.userInfo.username)
+      const answer = window.confirm('저장이 완료되었습니다.\n가입 상품 관리 페이지로 가시겠습니까?')
+      if (answer) {
+        router.push({ name: 'productManage', params: { username: userStore.userInfo.username }})
+      }
     })
     .catch((err) => {
       console.log(err)
@@ -205,6 +210,8 @@ const deleteDepositUser = function () {
       <h1><span class="color">정기예금</span> 검색하기</h1>
       <div class="w-25">
         <v-select
+          variant="outlined"
+          color="#1089FF"
           label="은행"
           :items="banks"
           v-model="selectedBank"

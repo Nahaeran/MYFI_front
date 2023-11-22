@@ -45,10 +45,10 @@ const chartOptions = ref({
     x: {
       stacked: true,
       ticks: {
-        maxRotation: 0,
+        maxRotation: 30,
         minRotation: 0,
         font: {
-          size: 10
+          size: 8
         }
       }
     },
