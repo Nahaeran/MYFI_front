@@ -1,16 +1,16 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useUserStore } from '@/stores/users'
+import BarChart from '@/components/BarChart.vue'
 import axios from 'axios'
+import { SourceNode } from 'source-map-js/lib/source-node';
 
 const userStore = useUserStore()
 
 const products = ref([])
-const productsLength = computed(() => {
-  return products.value.length
-})
 const dialog = ref(false)
-const loading = ref(false)
+const loading = ref(true)
+const chartReady = ref(false)
 
 const selectedProduct = ref()
 const selectedProductSimple = ref()
@@ -25,34 +25,131 @@ const isContractProduct = computed(() => {
   }
 })
 
+const months = [
+  { title: '6개월 금리', value: 6 }, 
+  { title: '12개월 금리', value: 12 }, 
+  { title: '24개월 금리', value: 24 }, 
+  { title: '36개월 금리', value: 36 }
+]
+
+const selectedMonth = ref({ title: '6개월 금리', value: 6 })
+
+const labels = ref([])
+const filterLabels = function () {
+  for (const product of products.value) {
+    labels.value.push(product.name)
+  }
+}
+watch(products, () => {
+  chartReady.value = false
+  loading.value = true
+  labels.value = []
+  intrRate.value = []
+  intrRate2.value = []
+  setTimeout(() => {
+    Promise.all([changeMonth(), filterLabels()])
+      .then((values) => {
+        loading.value = false
+        chartReady.value = true
+      })
+  }, 300);
+})
+
+const intrRate = ref([])
+const intrRate2 = ref([])
+
+const changeMonth = function () {
+  const filteredProduct = products.value.map(e => {
+    const tempMonth = selectedMonth.value.value || selectedMonth.value
+    return e.options.filter(ele => ele.saveTrm == tempMonth)[0]
+  })
+  
+  for (const product of filteredProduct) {
+    intrRate.value.push(product?.intrRate)
+    intrRate2.value.push(product?.intrRate2)
+  }
+}
+
+watch(selectedMonth, () => {
+  chartReady.value = false
+  loading.value = true
+  labels.value = []
+  intrRate.value = []
+  intrRate2.value = []
+  setTimeout(() => {
+    Promise.all([changeMonth(), filterLabels()])
+      .then((values) => {
+        loading.value = false
+        chartReady.value = true
+      })
+  }, 300);
+  
+  
+})
+
 const getProducts = function () {
-  const deposits = userStore.userInfo?.contract_deposit
-  const savings = userStore.userInfo?.contract_saving
+  // const deposits = userStore.userInfo?.contract_deposit
+  // const savings = userStore.userInfo?.contract_saving
+  const deposits = userStore.userContractDeposits
+  const savings = userStore.userContractSavings
   let id = 1
 
   for (const deposit of deposits) {
-    products.value.push({
+    const temp = {
       id: id++,
       code: deposit.deposit_code,
       type: '정기예금',
       bankName: deposit.kor_co_nm,
-      name: deposit.name
-    })
+      name: deposit.name,
+      options: []
+    }
+
+    for (const option of deposit.depositoption_set) {
+      const optionTemp = {
+        'intrRate': option.intr_rate,
+        'intrRate2': option.intr_rate2,
+        'intrRateTypeNm': option.intr_rate_type_nm,
+        saveTrm: option.save_trm
+      }
+      temp.options.push(optionTemp)
+    }
+
+    products.value.push(temp)
   }
 
   for (const saving of savings) {
-    products.value.push({
+    const temp = {
       id: id++,
       code: saving.saving_code,
       type: '정기적금',
       bankName: saving.kor_co_nm,
-      name: saving.name
-    })
+      name: saving.name,
+      options: []
+    }
+
+    for (const option of saving.savingoption_set) {
+      const optionTemp = {
+        'intrRate': option.intr_rate,
+        'intrRate2': option.intr_rate2,
+        'intrRateTypeNm': option.intr_rate_type_nm,
+        saveTrm: option.save_trm,
+        rsrvTypeNm: option.rsrv_type_nm
+      }
+      temp.options.push(optionTemp)
+    }
+    products.value.push(temp)
   }
 }
 
 onMounted(() => {
   getProducts()
+  Promise.all([changeMonth(), filterLabels()])
+    .then((values) => {
+      loading.value = false
+      chartReady.value = true
+    })
+  // changeMonth()
+  // filterLabels()
 })
 
 const close = function () {
@@ -179,10 +276,10 @@ const deleteProductUser = function (data) {
 
     <v-container>
       <v-row>
-        <v-col cols="2">
+        <v-col cols="3">
           <h2>가입한 상품들</h2>
         </v-col>
-        <v-col cols="10" class="d-flex flex-column">
+        <v-col cols="9" class="d-flex flex-column">
           <p
             v-for="product in products"
             :key="product.code"
@@ -209,6 +306,32 @@ const deleteProductUser = function (data) {
           </p>
         </v-col>
       </v-row>
+
+      <v-row>
+        <v-col cols="3">
+          <h2>가입한 상품 금리</h2>
+          <v-select
+            variant="outlined"
+            color="#1089FF"
+            label="개월 선택"
+            :items="months"
+            item-text="title"
+            item-value="value"
+            v-model="selectedMonth"
+            class="my-3"
+          ></v-select>
+        </v-col>
+        <v-col v-if="chartReady" cols="9">
+          <BarChart
+            :labels="labels"
+            :intr-rate="intrRate"
+            :intr-rate2="intrRate2"
+          />
+        </v-col>
+        <v-col v-else cols="9" style="height: 385px;">
+
+        </v-col>
+      </v-row>
     </v-container>
     <div v-if="loading" class="loading">
       <v-progress-circular
@@ -228,7 +351,7 @@ const deleteProductUser = function (data) {
   background-color: rgba(255, 255, 255, 0.6);
   display: flex;
   width: 100vw;
-  height: 80vh;
+  height: 100vh;
   align-items: center;
   justify-content: center;
 }

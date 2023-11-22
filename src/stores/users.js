@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { defineStore } from 'pinia'
 import axios from 'axios'
@@ -11,6 +11,13 @@ export const useUserStore = defineStore('users', () => {
     return token.value === null ? false : true
   })
   const userInfo = ref()
+  const userContractDeposits = ref()
+  const userContractSavings = ref()
+
+  watch(userInfo, () => {
+    userContractDeposits.value = userInfo.value?.contract_deposit
+    userContractSavings.value = userInfo.value?.contract_saving
+  })
 
   const getUserInfo = function (username) {
     axios({
@@ -89,5 +96,5 @@ export const useUserStore = defineStore('users', () => {
 
   }
 
-  return { API_URL, token, isLogin, userInfo, getUserInfo, signUp, logIn, logOut }
+  return { API_URL, token, isLogin, userInfo, userContractDeposits, userContractSavings, getUserInfo, signUp, logIn, logOut }
 }, { persist: true })
