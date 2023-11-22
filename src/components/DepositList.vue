@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useUserStore } from '@/stores/users'
+import BarChartDetail from '@/components/BarChartDetail.vue'
 import axios from 'axios'
 
 const headers = [
@@ -25,6 +26,10 @@ const selectedDepositCode = computed(() => {
   return selectedDepositSimple.value?.['deposit_code']
 })
 const dialog = ref(false)
+
+const averageIntrRate = [3.45, 4.08, 3.4, 3.35]
+const intrRate = ref([null, null, null, null])
+const intrRate2 = ref([null, null, null, null])
 
 const isContractDeposit = computed(() => {
   return userStore.userInfo?.contract_deposit.some(e => e['deposit_code'] === selectedDepositCode.value)
@@ -137,6 +142,23 @@ const getDeposit = function () {
         '최고 한도': data['max_limit'],
         '기타 유의사항': data['etc_note']
       }
+      const optionList = res.data.depositoption_set
+
+      for (const option of optionList) {
+        if (option.save_trm === "6") {
+          intrRate.value[0] = option.intr_rate
+          intrRate2.value[0] = option.intr_rate2
+        } else if (option.save_trm === "12") {
+          intrRate.value[1] = option.intr_rate
+          intrRate2.value[1] = option.intr_rate2
+        } else if (option.save_trm === "24") {
+          intrRate.value[2] = option.intr_rate
+          intrRate2.value[2] = option.intr_rate2
+        } else if (option.save_trm === "36") {
+          intrRate.value[3] = option.intr_rate
+          intrRate2.value[3] = option.intr_rate2
+        }
+      }
     })
     .catch((err) => {
       console.log(err)
@@ -223,6 +245,17 @@ const deleteDepositUser = function () {
               </tr>
             </tbody>
           </v-table>
+          <v-divider class="my-3"></v-divider>
+          <div class="mx-auto">
+            <BarChartDetail
+              :title="selectedDepositSimple.name"
+              :average-intr-rate="averageIntrRate"
+              :intr-rate="intrRate"
+              :intr-rate2="intrRate2"
+            />
+            <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+          </div>
+          
         </v-card-text>
 
         <v-card-actions>

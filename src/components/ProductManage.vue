@@ -3,7 +3,6 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useUserStore } from '@/stores/users'
 import BarChart from '@/components/BarChart.vue'
 import axios from 'axios'
-import { SourceNode } from 'source-map-js/lib/source-node';
 
 const userStore = useUserStore()
 
