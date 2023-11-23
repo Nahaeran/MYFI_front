@@ -1,8 +1,39 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
+import BarChartDetail from '@/components/BarChartDetail.vue'
 import { useUserStore } from '@/stores/users'
 import axios from 'axios'
+
+const userStore = useUserStore()
+
+const dialog = ref(false)
+const isDeposit = ref(false)
+const chartReady = ref(false)
+
+const selectedProduct = ref()
+const selectedProductSimple = ref()
+const selectedProductCode = computed(() => {
+  return selectedProductSimple.value?.code
+})
+const isContractProduct = computed(() => {
+  if (selectedProductSimple.value?.type === '정기예금'){
+    return userStore.userInfo?.contract_deposit.some(e => e['deposit_code'] === selectedProductCode.value)
+  } else if (selectedProductSimple.value?.type === '정기적금'){
+    return userStore.userInfo?.contract_saving.some(e => e['saving_code'] === selectedProductCode.value)
+  }
+})
+
+const averageIntrRateDeposit = [3.45, 4.08, 3.4, 3.35]
+const intrRateDeposit = ref([null, null, null, null])
+const intrRate2Deposit = ref([null, null, null, null])
+
+const averageIntrRateSaving = [2.78, 3.62, 3.57, 3.52]
+const intrRateF = ref([null, null, null, null])
+const intrRate2F = ref([null, null, null, null])
+const intrRateS = ref([null, null, null, null])
+const intrRate2S = ref([null, null, null, null])
+
 
 const selectedBank = ref('전체보기')
 const banks = ref(['전체보기', '우리은행', '한국스탠다드차타드은행', '대구은행', '부산은행', '광주은행', '제주은행', '전북은행', '경남은행', '중소기업은행', '한국산업은행', '국민은행', '신한은행', '농협은행', '하나은행', '수협은행'])
@@ -14,7 +45,7 @@ const citiesDetail = ref()
 
 const keyword = ref('은행')
 
-const userStore = useUserStore()
+
 
 const gangwon = ["강릉시","동해시","삼척시","속초시","원주시","춘천시","태백시","고성군","양구군","양양군","영월군","인제군","정선군","철원군","평창군","홍천군","화천군","횡성군"];
 const gyeonggi = ["고양시","과천시","광명시","광주시","구리시","군포시","김포시","남양주시","동두천시","부천시","성남시","수원시","시흥시","안산시","안성시","안양시","양주시","오산시","용인시","의왕시","의정부시","이천시","파주시","평택시","포천시","하남시","화성시","가평군","양평군","여주군","연천군"];
@@ -91,8 +122,12 @@ const deposits = ref([])
 const savings = ref([])
 
 const makeItems = function (item, isDeposit=true) {
+  const codeName = isDeposit ? 'deposit_code' : 'saving_code'
+  const state = isDeposit ? '정기예금' : '정기적금'
+
   const result = {
-    'deposit_code': item['deposit_code'],
+    'code': item[codeName],
+    'type': state,
     'dcls_month': item['dcls_month'],
     'kor_co_nm': item['kor_co_nm'],
     'name': item['name'],
@@ -274,7 +309,174 @@ const clickCurrentSearch = function () {
   initMap()
 }
 
+const close = function () {
+  dialog.value = false
+}
 
+const clickDetail = function (data) {
+  chartReady.value = false
+  selectedProductSimple.value = data
+  isDeposit.value = data.type === '정기예금' ? true : false
+  intrRateDeposit.value = []
+  intrRate2Deposit.value = []
+  intrRateF.value = []
+  intrRate2F.value = []
+  intrRateS.value = []
+  intrRate2S.value = []
+  getProduct()
+  dialog.value = true
+}
+
+const getProduct = function () {
+  let url = ''
+  if (isDeposit.value) {
+    url = `${userStore.API_URL}/financial/deposit_list/${selectedProductCode.value}/`
+  } else {
+    url = `${userStore.API_URL}/financial/saving_list/${selectedProductCode.value}/`
+  }
+
+  axios({
+    method: 'get',
+    url: url
+  })
+    .then((res) => {
+      const data = res.data
+      selectedProduct.value = {
+        '공시 제출월': data['dcls_month'],
+        '금융 회사명': data['kor_co_nm'],
+        '금융 상품명': data['name'],
+        '가입 방법': data['join_way'],
+        '만기 후 이자율': data['mtrt_int'],
+        '우대 조건': data['spcl_cnd'],
+        '가입 대상': data['join_member'],
+        '가입 제한': data['join_deny'] === 1 ? '제한없음' : data['join_deny'] === 2 ? '서민전용' : '일부제한',
+        '최고 한도': data['max_limit'],
+        '기타 유의사항': data['etc_note']
+      }
+
+      if (isDeposit.value) {
+        const optionList = res.data.depositoption_set
+
+        for (const option of optionList) {
+          if (option.save_trm === "6") {
+            intrRateDeposit.value[0] = option.intr_rate
+            intrRate2Deposit.value[0] = option.intr_rate2
+          } else if (option.save_trm === "12") {
+            intrRateDeposit.value[1] = option.intr_rate
+            intrRate2Deposit.value[1] = option.intr_rate2
+          } else if (option.save_trm === "24") {
+            intrRateDeposit.value[2] = option.intr_rate
+            intrRate2Deposit.value[2] = option.intr_rate2
+          } else if (option.save_trm === "36") {
+            intrRateDeposit.value[3] = option.intr_rate
+            intrRate2Deposit.value[3] = option.intr_rate2
+          }
+        }
+      } else {
+        const optionList = res.data.savingoption_set
+
+        for (const option of optionList) {
+          if (option.rsrv_type_nm === '자유적립식') {
+            if (option.save_trm === "6") {
+              intrRateF.value[0] = option.intr_rate
+              intrRate2F.value[0] = option.intr_rate2
+            } else if (option.save_trm === "12") {
+              intrRateF.value[1] = option.intr_rate
+              intrRate2F.value[1] = option.intr_rate2
+            } else if (option.save_trm === "24") {
+              intrRateF.value[2] = option.intr_rate
+              intrRate2F.value[2] = option.intr_rate2
+            } else if (option.save_trm === "36") {
+              intrRateF.value[3] = option.intr_rate
+              intrRate2F.value[3] = option.intr_rate2
+            }
+          } else {
+            if (option.save_trm === "6") {
+              intrRateS.value[0] = option.intr_rate
+              intrRate2S.value[0] = option.intr_rate2
+            } else if (option.save_trm === "12") {
+              intrRateS.value[1] = option.intr_rate
+              intrRate2S.value[1] = option.intr_rate2
+            } else if (option.save_trm === "24") {
+              intrRateS.value[2] = option.intr_rate
+              intrRate2S.value[2] = option.intr_rate2
+            } else if (option.save_trm === "36") {
+              intrRateS.value[3] = option.intr_rate
+              intrRate2S.value[3] = option.intr_rate2
+            }
+          }
+        }
+      }
+      chartReady.value = true
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const addSavingUser = function () {
+  let url = ''
+  if (isDeposit.value) {
+    url = `${userStore.API_URL}/financial/deposit_list/${selectedProductCode.value}/contract/`
+  } else {
+    url = `${userStore.API_URL}/financial/saving_list/${selectedProductCode.value}/contract/`
+  }
+
+  axios({
+    method: 'post',
+    url: url,
+    headers: {
+      Authorization: `Token ${userStore.token}`
+    }
+  })
+    .then((res) => {
+      userStore.getUserInfo(userStore.userInfo.username)
+      const answer = window.confirm('저장이 완료되었습니다.\n가입 상품 관리 페이지로 가시겠습니까?')
+      if (answer) {
+        router.push({ name: 'productManage', params: { username: userStore.userInfo.username }})
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const deleteProductUser = function (data) {
+  const anwser = window.confirm('정말 가입을 취소하시겠습니까?')
+
+  if (anwser) {
+    selectedProductSimple.value = data
+    let url = ''
+    if (isDeposit.value) {
+      url = `${userStore.API_URL}/financial/deposit_list/${selectedProductCode.value}/contract/`
+    } else {
+      url = `${userStore.API_URL}/financial/saving_list/${selectedProductCode.value}/contract/`
+    }
+
+    axios({
+      method: 'delete',
+      url: url,
+      headers: {
+        Authorization: `Token ${userStore.token}`
+      }
+    })
+      .then((res) => {
+        loading.value = true
+        userStore.getUserInfo(userStore.userInfo.username)
+        products.value = []
+        dialog.value = false
+        setTimeout(() => {
+          getProducts()
+          loading.value = false
+        }, 300)
+        
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+  
+}
 
 </script>
 
@@ -343,28 +545,107 @@ const clickCurrentSearch = function () {
       <div id="map" :style="`width: 1200px; height: 600px;`"></div>
     </div>
 
+    <v-dialog v-model="dialog" width="800">
+      <v-card v-if="selectedProduct" class="py-5 px-3">
+        <v-card-title class="d-flex align-center justify-space-between">
+          <h3>{{ selectedProduct['금융 상품명'] }}</h3>
+          <div v-if="userStore.isLogin">
+            <v-btn
+              v-if="isContractProduct"
+              color="red"
+              variant="flat"
+              @click.prevent="deleteProductUser(selectedProductSimple)"
+            >가입 취소하기</v-btn>
+            <v-btn
+              v-else
+              color="#1089FF"
+              variant="flat"
+              @click.prevent="addSavingUser"
+            >가입하기</v-btn>
+          </div>
+        </v-card-title>
+
+        <v-card-text>
+          <v-table>
+            <tbody>
+              <tr
+                v-for="(value, key) in selectedProduct"
+                :key="key"
+              >
+                <td width="25%" class="font-weight-bold">{{ key }}</td>
+                <td v-if="key === '최고 한도'">{{ value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
+                <td v-else>{{ value }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+          <v-divider class="my-3"></v-divider>
+
+          <div v-if="chartReady">
+            <div v-if="isDeposit" class="mx-auto">
+              <BarChartDetail
+                :title="selectedProductSimple.name"
+                :average-intr-rate="averageIntrRateDeposit"
+                :intr-rate="intrRateDeposit"
+                :intr-rate2="intrRate2Deposit"
+              />
+              <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+            </div>
+
+            <div v-else class="mx-auto">
+              <BarChartDetail
+                :title="`${selectedProductSimple.name} (자유적립식)`"
+                :average-intr-rate="averageIntrRateSaving"
+                :intr-rate="intrRateF"
+                :intr-rate2="intrRate2F"
+              />
+              <BarChartDetail
+                :title="`${selectedProductSimple.name} (정액적립식)`"
+                :average-intr-rate="averageIntrRateSaving"
+                :intr-rate="intrRateS"
+                :intr-rate2="intrRate2S"
+              />
+              <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+            </div>
+          </div>
+          
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="#1089FF" variant="text" @click="close">
+            닫기
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
     <div v-if="deposits.length !== 0 || savings.length !== 0" class="card-container">
       <h2 class="text-center">검색한 은행의 <span class="color">금융상품</span></h2> 
       <v-container>
         <v-row align="center" justify="center">
           <v-col
             v-for="deposit in deposits"
-            :key="deposit.name"
+            :key="deposit.code"
             cols="3"
           >
             <ProductCard
               :bank="deposit.kor_co_nm"
               :name="deposit.name"
+              :data="deposit"
+              @click-detail="clickDetail"
             />
           </v-col>
           <v-col
             v-for="saving in savings"
-            :key="saving.name"
+            :key="saving.code"
             cols="3"
           >
             <ProductCard
               :bank="saving.kor_co_nm"
               :name="saving.name"
+              :data="saving"
+              @click-detail="clickDetail"
             />
           </v-col>
         </v-row>

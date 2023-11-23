@@ -2,7 +2,14 @@
 const props = defineProps({
   bank: String,
   name: String,
+  data: Object
 })
+
+const emit = defineEmits(['clickDetail'])
+
+const clickDetail = function () {
+  emit('clickDetail', props.data)
+}
 </script>
 
 <template>
@@ -21,7 +28,7 @@ const props = defineProps({
     </v-card-item>
 
     <v-card-actions>
-      <v-btn variant="tonal" color="#1089FF" class="ml-auto">
+      <v-btn variant="tonal" color="#1089FF" class="ml-auto" @click.prevent="clickDetail">
         상세보기
       </v-btn>
     </v-card-actions>
