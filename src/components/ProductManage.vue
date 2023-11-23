@@ -11,6 +11,7 @@ const products = ref([])
 const dialog = ref(false)
 const loading = ref(true)
 const chartReady = ref(false)
+const detailChartReady = ref(false)
 const isDeposit = ref(false)
 
 const selectedProduct = ref()
@@ -183,6 +184,7 @@ const close = function () {
 }
 
 const clickDetail = function (data) {
+  detailChartReady.value = false
   selectedProductSimple.value = data
   isDeposit.value = data.type === '정기예금' ? true : false
   intrRateDeposit.value = []
@@ -275,6 +277,7 @@ const getProduct = function () {
           }
         }
       }
+      detailChartReady.value = true
     })
     .catch((err) => {
       console.log(err)
@@ -354,31 +357,34 @@ const deleteProductUser = function (data) {
           </v-table>
           <v-divider class="my-3"></v-divider>
 
-          <div v-if="isDeposit" class="mx-auto">
-            <BarChartDetail
-              :title="selectedProductSimple.name"
-              :average-intr-rate="averageIntrRateDeposit"
-              :intr-rate="intrRateDeposit"
-              :intr-rate2="intrRate2Deposit"
-            />
-            <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
-          </div>
+          <div v-if="detailChartReady">
+            <div v-if="isDeposit" class="mx-auto">
+              <BarChartDetail
+                :title="selectedProductSimple.name"
+                :average-intr-rate="averageIntrRateDeposit"
+                :intr-rate="intrRateDeposit"
+                :intr-rate2="intrRate2Deposit"
+              />
+              <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+            </div>
 
-          <div v-else class="mx-auto">
-            <BarChartDetail
-              :title="`${selectedProductSimple.name} (자유적립식)`"
-              :average-intr-rate="averageIntrRateSaving"
-              :intr-rate="intrRateF"
-              :intr-rate2="intrRate2F"
-            />
-            <BarChartDetail
-              :title="`${selectedProductSimple.name} (정액적립식)`"
-              :average-intr-rate="averageIntrRateSaving"
-              :intr-rate="intrRateS"
-              :intr-rate2="intrRate2S"
-            />
-            <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+            <div v-else class="mx-auto">
+              <BarChartDetail
+                :title="`${selectedProductSimple.name} (자유적립식)`"
+                :average-intr-rate="averageIntrRateSaving"
+                :intr-rate="intrRateF"
+                :intr-rate2="intrRate2F"
+              />
+              <BarChartDetail
+                :title="`${selectedProductSimple.name} (정액적립식)`"
+                :average-intr-rate="averageIntrRateSaving"
+                :intr-rate="intrRateS"
+                :intr-rate2="intrRate2S"
+              />
+              <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+            </div>
           </div>
+          
         </v-card-text>
 
         <v-card-actions>
