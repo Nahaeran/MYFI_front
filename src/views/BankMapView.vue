@@ -1,11 +1,13 @@
 <script setup>
 import { ref, onMounted, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import ProductCard from '@/components/ProductCard.vue'
 import BarChartDetail from '@/components/BarChartDetail.vue'
 import { useUserStore } from '@/stores/users'
 import axios from 'axios'
 
 const userStore = useUserStore()
+const router = useRouter()
 
 const dialog = ref(false)
 const isDeposit = ref(false)
