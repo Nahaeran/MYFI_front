@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/users'
 import HomeView from '@/views/HomeView.vue'
+import NotFound from '@/components/NotFound.vue'
 import CompareListView from '@/views/CompareListView.vue'
 import DepositList from '@/components/DepositList.vue'
 import SavingList from '@/components/SavingList.vue'
@@ -110,7 +111,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/:username*',
+      path: '/mypage/:username*',
       component: MyPageView,
       beforeEnter: (to, from) => {
         const userStore = useUserStore()
@@ -136,6 +137,15 @@ const router = createRouter({
           component: ProductRecommend
         }
       ]
+    },
+    {
+      path: '/404',
+      name: 'notFound',
+      component: NotFound
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: "/404"
     },
   ]
 })
