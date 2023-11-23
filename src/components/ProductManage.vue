@@ -283,6 +283,7 @@ const getProduct = function () {
 
 const deleteProductUser = function (data) {
   const anwser = window.confirm('정말 가입을 취소하시겠습니까?')
+  isDeposit.value = data.type === '정기예금' ? true : false
 
   if (anwser) {
     selectedProductSimple.value = data
