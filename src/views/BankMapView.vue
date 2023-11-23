@@ -1,6 +1,8 @@
 <script setup>
-import { ref, onMounted, watch, onRenderTracked } from 'vue'
-// import Map from '@/components/Map.vue'
+import { ref, onMounted, watch } from 'vue'
+import ProductCard from '@/components/ProductCard.vue'
+import { useUserStore } from '@/stores/users'
+import axios from 'axios'
 
 const selectedBank = ref('전체보기')
 const banks = ref(['전체보기', '우리은행', '한국스탠다드차타드은행', '대구은행', '부산은행', '광주은행', '제주은행', '전북은행', '경남은행', '중소기업은행', '한국산업은행', '국민은행', '신한은행', '농협은행', '하나은행', '수협은행'])
@@ -11,6 +13,8 @@ const selectedCityDetail = ref()
 const citiesDetail = ref()
 
 const keyword = ref('은행')
+
+const userStore = useUserStore()
 
 const gangwon = ["강릉시","동해시","삼척시","속초시","원주시","춘천시","태백시","고성군","양구군","양양군","영월군","인제군","정선군","철원군","평창군","홍천군","화천군","횡성군"];
 const gyeonggi = ["고양시","과천시","광명시","광주시","구리시","군포시","김포시","남양주시","동두천시","부천시","성남시","수원시","시흥시","안산시","안성시","안양시","양주시","오산시","용인시","의왕시","의정부시","이천시","파주시","평택시","포천시","하남시","화성시","가평군","양평군","여주군","연천군"];
@@ -82,6 +86,40 @@ watch([selectedCity, selectedCityDetail, selectedBank], () => {
   }
 })
 
+// 선택한 은행의 예, 적금
+const deposits = ref([])
+const savings = ref([])
+
+const makeItems = function (item, isDeposit=true) {
+  const result = {
+    'deposit_code': item['deposit_code'],
+    'dcls_month': item['dcls_month'],
+    'kor_co_nm': item['kor_co_nm'],
+    'name': item['name'],
+    '6month': null,
+    '12month': null,
+    '24month': null,
+    '35month': null,
+  }
+
+  const setName = isDeposit ? 'depositoption_set' : "savingoption_set"
+
+  for (const option of item[setName]) {
+    const saveTrm = option['save_trm']
+
+    if (saveTrm === "6") {
+      result['6month'] = option['intr_rate']
+    } else if (saveTrm === "12") {
+      result['12month'] = option['intr_rate']
+    } else if (saveTrm === "24") {
+      result['24month'] = option['intr_rate']
+    } else if (saveTrm === "36") {
+      result['36month'] = option['intr_rate']
+    }
+  }
+
+  return result
+}
 
 const MAP_API_KEY = import.meta.env.VITE_MAP_API_KEY
 
@@ -199,6 +237,37 @@ const initMap = (state='current') => {
 
 const clickSearch = function () {
   initMap('search')
+  if (selectedBank.value !== '전체 보기') {
+    axios({
+      method: 'get',
+      url: `${userStore.API_URL}/financial/get_bank_deposit/${selectedBank.value}/`
+    })
+      .then((res) => {
+        deposits.value = []
+        const results = res.data
+        for (const item of results){
+          deposits.value.push(makeItems(item))
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+
+    axios({
+      method: 'get',
+      url: `${userStore.API_URL}/financial/get_bank_saving/${selectedBank.value}/`
+    })
+      .then((res) => {
+        savings.value = []
+        const results = res.data
+        for (const item of results){
+          savings.value.push(makeItems(item, false))
+        }
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
 }
 
 const clickCurrentSearch = function () {
@@ -270,9 +339,36 @@ const clickCurrentSearch = function () {
         <v-icon class="me-1">
           mdi-reload
         </v-icon>
-        <!-- <v-icon icon="fa:fas fa-solid fa-rotate-right" style="color: #90a7d0;"></v-icon> -->
         현 지도에서 해당 은행 검색</v-btn>
       <div id="map" :style="`width: 1200px; height: 600px;`"></div>
+    </div>
+
+    <div v-if="deposits.length !== 0 || savings.length !== 0" class="card-container">
+      <h2 class="text-center">검색한 은행의 <span class="color">금융상품</span></h2> 
+      <v-container>
+        <v-row align="center" justify="center">
+          <v-col
+            v-for="deposit in deposits"
+            :key="deposit.name"
+            cols="3"
+          >
+            <ProductCard
+              :bank="deposit.kor_co_nm"
+              :name="deposit.name"
+            />
+          </v-col>
+          <v-col
+            v-for="saving in savings"
+            :key="saving.name"
+            cols="3"
+          >
+            <ProductCard
+              :bank="saving.kor_co_nm"
+              :name="saving.name"
+            />
+          </v-col>
+        </v-row>
+      </v-container>
     </div>
   </div>
 </template>
