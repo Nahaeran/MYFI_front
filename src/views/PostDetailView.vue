@@ -8,7 +8,7 @@ import axios from 'axios'
 const route = useRoute()
 const postId = route.params.id
 const router = useRouter()
-const page = route.query.page
+const pageNum = route.query.page
 
 const post = ref()
 const comments = ref()
@@ -57,16 +57,6 @@ onMounted(() => {
         console.log(err)
       })
 
-  // axios({
-  //   method: 'get',
-  //   url: `${userStore.API_URL}/posts/${postId}/comments/`
-  // })
-  //   .then((res) => {
-  //     comments.value = res.data
-  //   })
-  //   .catch((err) => {
-  //     console.log(err)
-  //   })
   getComments()
 })
 
@@ -169,7 +159,7 @@ const save = function () {
 <template>
   <div>
     <div v-if="post" class="container">
-      <GoToBack :goName="{ name: 'postList', query: { page: page } }" />
+      <GoToBack :goName="{ name: 'postList', query: { page: pageNum } }" />
       <header>
         <p class="text-subtitle-2">{{ post.id }}번째 게시물</p>
         <div class="d-flex justify-space-between align-center">
@@ -208,7 +198,7 @@ const save = function () {
               size="small"
               variant="tonal"
               color="green-darken-2"
-              :to="{ name: 'postUpdate', params: { id: postId }}"
+              :to="{ name: 'postUpdate', params: { id: postId }, query: { page: pageNum }}"
             >수정</v-btn>
             <v-btn
               size="small"

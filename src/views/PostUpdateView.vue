@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import GoToBack from '@/components/GoToBack.vue'
-import PostForm from '@/components/PostForm.vue'
 import { useUserStore } from '@/stores/users'
 import { useVuelidate } from '@vuelidate/core'
 import { required, maxLength, helpers } from '@vuelidate/validators'
@@ -22,6 +21,7 @@ const router = useRouter()
 const userStore = useUserStore()
 
 const postId = route.params.id
+const pageNum = route.query.page
 
 const rules = {
   title: {
@@ -66,7 +66,7 @@ const updatePost = function () {
       }
     })
       .then((res) => {
-        router.push({ name: 'postDetail', params: { id: res.data.id } })
+        router.push({ name: 'postDetail', params: { id: res.data.id }, query: { page: pageNum } })
       })
       .catch((err) => {
         console.log(err)
@@ -77,9 +77,9 @@ const updatePost = function () {
 
 <template>
   <div class="container">
-    <GoToBack  :goName="{ name: 'postDetail', params: { id: postId }}"/>
+    <GoToBack  :goName="{ name: 'postDetail', params: { id: postId }, query: { page: pageNum }}"/>
     <h1>게시글 수정하기</h1>
-    <v-form class="my-5" @submit.prevent="updatePost">
+    <v-form class="my-5">
       <v-text-field
         variant="outlined"
         color="#1089FF"
@@ -88,6 +88,7 @@ const updatePost = function () {
         :error-messages="v$.title.$errors.map(e => e.$message)"
         @input="v$.title.$touch"
         @blur="v$.title.$touch"
+        @keypress.enter.prevent="updatePost"
       ></v-text-field>
       <v-textarea
         variant="outlined"

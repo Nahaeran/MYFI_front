@@ -14,6 +14,7 @@ const page = ref(Number(queryPage))
 
 watch(page, () => {
   postStore.getPosts(page.value)
+  window.scrollTo({ left: 0, top: 0, behavior: "smooth" });
   router.push({ name: 'postList', query: { page: page.value }})
 })
 
