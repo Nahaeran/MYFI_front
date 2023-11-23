@@ -1,9 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/users'
+import BarChartDetail from '@/components/BarChartDetail.vue'
 import axios from 'axios'
 
 const userStore = useUserStore()
+const router = useRouter()
 
 const tab = ref('one')
 const isExistInfo = ref(false)
@@ -77,7 +80,7 @@ onMounted(() => {
       }
     })
       .then((res) => {
-        console.log(res.data)
+        // console.log(res.data)
         isNotSimilarUsers.value = res.data.is_not_similar_users
 
         const deposits = res.data.deposit
@@ -91,7 +94,7 @@ onMounted(() => {
           recommend2.value.push(makeItems(saving.saving, false))
         }
 
-        console.log(recommend2.value)
+        // console.log(recommend2.value)
       })
       .catch((err) => {
         console.log(err)
@@ -106,12 +109,10 @@ onMounted(() => {
       }
     })
       .then((res) => {
-        console.log(res.data)
+        // console.log(res.data)
 
         const deposits = res.data.deposit
         const savings = res.data.saving
-        console.log(deposits)
-        console.log(savings)
 
         for (const deposit of deposits) {
           recommend1.value.push(makeItems(deposit))
@@ -121,7 +122,7 @@ onMounted(() => {
           recommend1.value.push(makeItems(saving, false))
         }
 
-        console.log(recommend1.value)
+        // console.log(recommend1.value)
       })
       .catch((err) => {
         console.log(err)
@@ -132,7 +133,20 @@ onMounted(() => {
 const dialog = ref(false)
 
 const chartReady = ref(false)
+const selectedProduct = ref()
 const selectedProductSimple = ref()
+const selectedProductCode = computed(() => {
+  return selectedProductSimple.value?.code
+})
+
+const isContractProduct = computed(() => {
+  if (selectedProductSimple.value?.type === '정기예금'){
+    return userStore.userInfo?.contract_deposit.some(e => e['deposit_code'] === selectedProductCode.value)
+  } else if (selectedProductSimple.value?.type === '정기적금'){
+    return userStore.userInfo?.contract_saving.some(e => e['saving_code'] === selectedProductCode.value)
+  }
+})
+
 const isDeposit = ref()
 
 const averageIntrRateDeposit = [3.45, 4.08, 3.4, 3.35]
@@ -160,7 +174,157 @@ const clickRow = function (data) {
 }
 
 const getProduct = function () {
+  let url = ''
+  if (isDeposit.value) {
+    url = `${userStore.API_URL}/financial/deposit_list/${selectedProductCode.value}/`
+  } else {
+    url = `${userStore.API_URL}/financial/saving_list/${selectedProductCode.value}/`
+  }
 
+  axios({
+    method: 'get',
+    url: url
+  })
+    .then((res) => {
+      const data = res.data
+      selectedProduct.value = {
+        '가입자 수 (MYFI 기준)': data.contract_user.length,
+        '공시 제출월': data['dcls_month'],
+        '금융 회사명': data['kor_co_nm'],
+        '금융 상품명': data['name'],
+        '가입 방법': data['join_way'],
+        '만기 후 이자율': data['mtrt_int'],
+        '우대 조건': data['spcl_cnd'],
+        '가입 대상': data['join_member'],
+        '가입 제한': data['join_deny'] === 1 ? '제한없음' : data['join_deny'] === 2 ? '서민전용' : '일부제한',
+        '최고 한도': data['max_limit'],
+        '기타 유의사항': data['etc_note']
+      }
+
+      if (isDeposit.value) {
+        const optionList = res.data.depositoption_set
+
+        for (const option of optionList) {
+          if (option.save_trm === "6") {
+            intrRateDeposit.value[0] = option.intr_rate
+            intrRate2Deposit.value[0] = option.intr_rate2
+          } else if (option.save_trm === "12") {
+            intrRateDeposit.value[1] = option.intr_rate
+            intrRate2Deposit.value[1] = option.intr_rate2
+          } else if (option.save_trm === "24") {
+            intrRateDeposit.value[2] = option.intr_rate
+            intrRate2Deposit.value[2] = option.intr_rate2
+          } else if (option.save_trm === "36") {
+            intrRateDeposit.value[3] = option.intr_rate
+            intrRate2Deposit.value[3] = option.intr_rate2
+          }
+        }
+      } else {
+        const optionList = res.data.savingoption_set
+
+        for (const option of optionList) {
+          if (option.rsrv_type_nm === '자유적립식') {
+            if (option.save_trm === "6") {
+              intrRateF.value[0] = option.intr_rate
+              intrRate2F.value[0] = option.intr_rate2
+            } else if (option.save_trm === "12") {
+              intrRateF.value[1] = option.intr_rate
+              intrRate2F.value[1] = option.intr_rate2
+            } else if (option.save_trm === "24") {
+              intrRateF.value[2] = option.intr_rate
+              intrRate2F.value[2] = option.intr_rate2
+            } else if (option.save_trm === "36") {
+              intrRateF.value[3] = option.intr_rate
+              intrRate2F.value[3] = option.intr_rate2
+            }
+          } else {
+            if (option.save_trm === "6") {
+              intrRateS.value[0] = option.intr_rate
+              intrRate2S.value[0] = option.intr_rate2
+            } else if (option.save_trm === "12") {
+              intrRateS.value[1] = option.intr_rate
+              intrRate2S.value[1] = option.intr_rate2
+            } else if (option.save_trm === "24") {
+              intrRateS.value[2] = option.intr_rate
+              intrRate2S.value[2] = option.intr_rate2
+            } else if (option.save_trm === "36") {
+              intrRateS.value[3] = option.intr_rate
+              intrRate2S.value[3] = option.intr_rate2
+            }
+          }
+        }
+      }
+      chartReady.value = true
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const close = function () {
+  dialog.value = false
+}
+
+const addSavingUser = function () {
+  let url = ''
+  if (isDeposit.value) {
+    url = `${userStore.API_URL}/financial/deposit_list/${selectedProductCode.value}/contract/`
+  } else {
+    url = `${userStore.API_URL}/financial/saving_list/${selectedProductCode.value}/contract/`
+  }
+
+  axios({
+    method: 'post',
+    url: url,
+    headers: {
+      Authorization: `Token ${userStore.token}`
+    }
+  })
+    .then((res) => {
+      userStore.getUserInfo(userStore.userInfo.username)
+      const answer = window.confirm('저장이 완료되었습니다.\n가입 상품 관리 페이지로 가시겠습니까?')
+      if (answer) {
+        router.push({ name: 'productManage', params: { username: userStore.userInfo.username }})
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+const deleteProductUser = function (data) {
+  const anwser = window.confirm('정말 가입을 취소하시겠습니까?')
+
+  if (anwser) {
+    selectedProductSimple.value = data
+    let url = ''
+    if (isDeposit.value) {
+      url = `${userStore.API_URL}/financial/deposit_list/${selectedProductCode.value}/contract/`
+    } else {
+      url = `${userStore.API_URL}/financial/saving_list/${selectedProductCode.value}/contract/`
+    }
+
+    axios({
+      method: 'delete',
+      url: url,
+      headers: {
+        Authorization: `Token ${userStore.token}`
+      }
+    })
+      .then((res) => {
+        loading.value = true
+        userStore.getUserInfo(userStore.userInfo.username)
+        dialog.value = false
+        setTimeout(() => {
+          loading.value = false
+        }, 300)
+        
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
+  
 }
 
 </script>
@@ -177,6 +341,84 @@ const getProduct = function () {
     </div>
 
     <div v-else-if="!loading">
+
+      <v-dialog v-model="dialog" width="800">
+        <v-card v-if="selectedProduct" class="py-5 px-3">
+          <v-card-title class="d-flex align-center justify-space-between">
+            <h3>{{ selectedProduct['금융 상품명'] }}</h3>
+            <div v-if="userStore.isLogin">
+              <v-btn
+                v-if="isContractProduct"
+                color="red"
+                variant="flat"
+                @click.prevent="deleteProductUser(selectedProductSimple)"
+              >가입 취소하기</v-btn>
+              <v-btn
+                v-else
+                color="#1089FF"
+                variant="flat"
+                @click.prevent="addSavingUser"
+              >가입하기</v-btn>
+            </div>
+          </v-card-title>
+
+          <v-card-text>
+            <v-table>
+              <tbody>
+                <tr
+                  v-for="(value, key) in selectedProduct"
+                  :key="key"
+                >
+                  <td width="25%" class="font-weight-bold">{{ key }}</td>
+                  <td v-if="key === '최고 한도'">{{ value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
+                  <td v-else>{{ value }}</td>
+                </tr>
+              </tbody>
+            </v-table>
+            <v-divider class="my-3"></v-divider>
+
+            <div v-if="chartReady">
+              <div v-if="isDeposit" class="mx-auto">
+                <BarChartDetail
+                  :title="selectedProductSimple.name"
+                  :average-intr-rate="averageIntrRateDeposit"
+                  :intr-rate="intrRateDeposit"
+                  :intr-rate2="intrRate2Deposit"
+                />
+                <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+                <p class="text-caption">* 차트에 없는 이자율은 상품에 존재하지 않는 옵션입니다.</p>
+              </div>
+
+              <div v-else class="mx-auto">
+                <BarChartDetail
+                  :title="`${selectedProductSimple.name} (자유적립식)`"
+                  :average-intr-rate="averageIntrRateSaving"
+                  :intr-rate="intrRateF"
+                  :intr-rate2="intrRate2F"
+                />
+                <BarChartDetail
+                  :title="`${selectedProductSimple.name} (정액적립식)`"
+                  :average-intr-rate="averageIntrRateSaving"
+                  :intr-rate="intrRateS"
+                  :intr-rate2="intrRate2S"
+                />
+                <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+                <p class="text-caption">* 차트에 없는 이자율은 상품에 존재하지 않는 옵션입니다.</p>
+              </div>
+            </div>
+            
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="#1089FF" variant="text" @click="close">
+              닫기
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+
       <v-card class="elevation-6">
       <v-tabs
         grow

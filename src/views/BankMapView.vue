@@ -344,6 +344,7 @@ const getProduct = function () {
     .then((res) => {
       const data = res.data
       selectedProduct.value = {
+        '가입자 수 (MYFI 기준)': data.contract_user.length,
         '공시 제출월': data['dcls_month'],
         '금융 회사명': data['kor_co_nm'],
         '금융 상품명': data['name'],
@@ -463,15 +464,8 @@ const deleteProductUser = function (data) {
       }
     })
       .then((res) => {
-        loading.value = true
         userStore.getUserInfo(userStore.userInfo.username)
-        products.value = []
         dialog.value = false
-        setTimeout(() => {
-          getProducts()
-          loading.value = false
-        }, 300)
-        
       })
       .catch((err) => {
         console.log(err)
@@ -591,6 +585,7 @@ const deleteProductUser = function (data) {
                 :intr-rate2="intrRate2Deposit"
               />
               <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+              <p class="text-caption">* 차트에 없는 이자율은 상품에 존재하지 않는 옵션입니다.</p>
             </div>
 
             <div v-else class="mx-auto">
@@ -607,6 +602,7 @@ const deleteProductUser = function (data) {
                 :intr-rate2="intrRate2S"
               />
               <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+              <p class="text-caption">* 차트에 없는 이자율은 상품에 존재하지 않는 옵션입니다.</p>
             </div>
           </div>
           

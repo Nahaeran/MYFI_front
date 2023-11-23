@@ -9,11 +9,11 @@ const userStore = useUserStore()
 <template>
   <div class="container">
     <header class="d-flex align-center mb-7">
-      <RouterLink :to="{ name: 'myPage'}" exact-active-class="active">회원 정보 관리</RouterLink>
+      <RouterLink :to="{ name: 'myPage', params: { username: userStore.userInfo.username }}" exact-active-class="active">회원 정보 관리</RouterLink>
       <p>|</p>
-      <RouterLink :to="{ name: 'productManage'}" exact-active-class="active">가입 상품 관리</RouterLink>
+      <RouterLink :to="{ name: 'productManage', params: { username: userStore.userInfo.username }}" exact-active-class="active">가입 상품 관리</RouterLink>
       <p>|</p>
-      <RouterLink :to="{ name: 'productRecommend'}" exact-active-class="active">상품 추천 받기</RouterLink>
+      <RouterLink :to="{ name: 'productRecommend', params: { username: userStore.userInfo.username }}" exact-active-class="active">상품 추천 받기</RouterLink>
     </header>
     <RouterView />
   </div>

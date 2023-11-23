@@ -154,6 +154,7 @@ const getSaving = function () {
     .then((res) => {
       const data = res.data
       selectedSaving.value = {
+        '가입자 수 (MYFI 기준)': data.contract_user.length,
         '공시 제출월': data['dcls_month'],
         '금융 회사명': data['kor_co_nm'],
         '금융 상품명': data['name'],
@@ -304,7 +305,7 @@ const deleteSavingUser = function () {
                 v-for="(value, key) in selectedSaving"
                 :key="key"
               >
-                <td width="25%" class="font-weight-bold">{{ key }}</td>
+                <td width="28%" class="font-weight-bold">{{ key }}</td>
                 <td v-if="key === '최고 한도'">{{ value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
                 <td v-else>{{ value }}</td>
               </tr>
@@ -326,6 +327,7 @@ const deleteSavingUser = function () {
               :intr-rate2="intrRate2S"
             />
             <p class="text-caption">* 개월별 평균 예금 금리는 2023년 11월 기준입니다.</p>
+            <p class="text-caption">* 차트에 없는 이자율은 상품에 존재하지 않는 옵션입니다.</p>
           </div>
 
         </v-card-text>
