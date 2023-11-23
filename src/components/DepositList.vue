@@ -253,7 +253,8 @@ const deleteDepositUser = function () {
                 :key="key"
               >
                 <td width="25%" class="font-weight-bold">{{ key }}</td>
-                <td>{{ value }}</td>
+                <td v-if="key === '최고 한도'">{{ value?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") }}</td>
+                <td v-else>{{ value }}</td>
               </tr>
             </tbody>
           </v-table>

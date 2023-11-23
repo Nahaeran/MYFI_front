@@ -196,6 +196,7 @@ const editProfileImg = function (event) {
                   :error-messages="v$.updateValue.$errors.map(e => e.$message)"
                   @input="v$.updateValue.$touch"
                   @blur="v$.updateValue.$touch"
+                  @keypress.enter="save"
                 ></v-text-field>
               </v-card-text>
 

@@ -25,6 +25,7 @@ import Footer from '@/components/Footer.vue'
   bottom: -200px; */
   position: relative;
   bottom: -150px;
+  transform : translateY(100%);
 }
 </style>
 
