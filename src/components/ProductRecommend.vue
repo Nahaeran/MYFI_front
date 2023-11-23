@@ -203,6 +203,7 @@ const getProduct = function () {
               fixed-header
               :items="recommend2"
               item-value="code"
+              height="600"
             >
             <template v-slot:item="{ item }">
               <tr @click="clickRow(item)">
@@ -227,7 +228,20 @@ const getProduct = function () {
               :items="recommend1"
               item-value="code"
               height="600"
-            ></v-data-table-virtual>
+            >
+              <template v-slot:item="{ item }">
+                <tr @click="clickRow(item)">
+                  <td>{{ item['type'] }}</td>
+                  <td>{{ item['dcls_month'] }}</td>
+                  <td>{{ item['kor_co_nm'] }}</td>
+                  <td align="center">{{ item['name'] }}</td>
+                  <td align="center">{{ item['6month'] }}</td>
+                  <td align="center">{{ item['12month'] }}</td>
+                  <td align="center">{{ item['24month'] }}</td>
+                  <td align="center">{{ item['36month'] }}</td>
+                </tr>
+              </template>
+            </v-data-table-virtual>
           </v-window-item>
 
         </v-window>
@@ -256,5 +270,15 @@ const getProduct = function () {
   height: 100vh;
   align-items: center;
   justify-content: center;
+}
+
+tbody > tr {
+  transition: 200ms;
+  cursor: pointer;
+}
+
+tbody > tr:hover {
+  background-color: rgb(247, 250, 253);
+  color: #1089FF;
 }
 </style>

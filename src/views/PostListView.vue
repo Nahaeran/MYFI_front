@@ -30,7 +30,7 @@ onMounted(() => {
 <template>
   <div class="container">
     <div class="d-flex justify-space-between align-end">
-      <h1><span class="color">자유</span> 게시판</h1>
+      <h1>금융상품 <span class="color">자유</span> 게시판</h1>
       <v-btn
         v-if="userStore.isLogin"
         variant="flat"

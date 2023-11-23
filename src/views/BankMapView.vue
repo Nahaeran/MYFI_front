@@ -679,4 +679,14 @@ const deleteProductUser = function (data) {
 #map {
   border-radius: 10px;
 }
+
+tbody > tr {
+  transition: 200ms;
+  cursor: pointer;
+}
+
+tbody > tr:hover {
+  background-color: rgb(247, 250, 253);
+  color: #1089FF;
+}
 </style>
