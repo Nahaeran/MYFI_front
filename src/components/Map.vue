@@ -127,16 +127,40 @@ const clickCurrentSearch = function () {
 </script>
 
 <template>
-  <div>
+  <div class="map-container">
     <v-btn
-      variant="flat"
+      variant="text"
       color="#1089FF"
       @click="clickCurrentSearch"
-    >현 지도에서 검색</v-btn>
-    <div id="map" :style="`width: ${width}px; height: ${height}px;`"></div>
+      class="current-search-btn"
+      rounded="xl"
+      elevation="8"
+      size="large"
+    > 
+        <v-icon class="me-1">
+          mdi-reload
+        </v-icon>
+      현 지도에서 검색</v-btn>
+    <div id="map" :style="`width: ${width}px; height: ${height}px;`" class="elevation-5"></div>
   </div>
 </template>
 
 <style scoped>
+#map {
+  border-radius: 10px;
+}
 
+.map-container {
+  position: relative;
+  border-radius: 10px;
+}
+
+.current-search-btn {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 100;
+  transform: translateX(-50%);
+  background-color: white;
+}
 </style>

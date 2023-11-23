@@ -1,6 +1,9 @@
 <script setup>
+import { useUserStore } from '@/stores/users'
 import Map from '@/components/Map.vue'
 import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
+
+const userStore = useUserStore()
 </script>
 
 <template>
@@ -23,7 +26,7 @@ import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
             size="x-large"
             color="#1089FF"
             class="caro-item-btn"
-            :to="{ name: 'signUp'}"
+            :to="userStore.isLogin ? { name: 'productRecommend', params: { username: userStore.userInfo.username }} : { name: 'signUp'}"
           >회원가입하고 추천받기</v-btn>
         </div> 
         <img src="@/assets/carousel-1.jpeg" class="caro-item-img" width="400">
@@ -31,9 +34,9 @@ import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
 
       <v-carousel-item>
         <div class="caro-item-text">
-          <p>금융상품은 후기를 쉽게 볼 수 없을까?</p>
+          <p>금융상품에 관한 이야기 어디서 할 수 있을까?</p>
           <div class="title">
-            <p><span class="color">금융상품 후기 게시판</span>으로</p>
+            <p><span class="color">금융상품 자유 게시판</span>으로</p>
             <p>오세요!</p>
           </div>
           <v-btn
@@ -43,7 +46,7 @@ import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
             color="#1089FF"
             class="caro-item-btn"
             :to="{ name: 'postList'}"
-          >금융상품 후기 게시판 바로가기</v-btn>
+          >금융상품 자유 게시판 바로가기</v-btn>
         </div>
         <img src="@/assets/carousel-2.jpeg" class="caro-item-img" width="500">
       </v-carousel-item>
@@ -61,7 +64,7 @@ import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
             size="x-large"
             color="#1089FF"
             class="caro-item-btn"
-            :to="{ name: 'signUp'}"
+            :to="userStore.isLogin ? { name: 'productRecommend', params: { username: userStore.userInfo.username }} : { name: 'signUp'}"
           >회원가입하고 추천받기</v-btn>
         </div> 
         <img src="@/assets/carousel-3.jpeg" class="caro-item-img" width="400">
@@ -69,11 +72,15 @@ import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
     </v-carousel>
   </div>
 
-  <div class="container d-flex justify-space-between">
-    <!-- <ExchangeCalculater /> -->
+  <div class="container d-flex justify-space-between align-center">
+    <div class="calculater">
+      <h1><span class="color">환율</span> 계산기</h1>
+      <ExchangeCalculater class="elevation-4"/>
+    </div>
+    
     <Map 
       :width="350"
-      :height="500"
+      :height="600"
     />
   </div>
 
@@ -83,6 +90,18 @@ import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
 <style scoped>
 .v-carousel {
   border-bottom: 1px solid #DBDBDB;
+}
+
+.calculater {
+  width: 70%;
+  position: relative;
+}
+
+.calculater > h1 {
+  position: absolute;
+  z-index: 100;
+  top: 20px;
+  left: 18px;
 }
 
 .caro-item-text {
