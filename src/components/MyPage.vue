@@ -63,7 +63,7 @@ const close = function () {
 const save = function () {
   v$.value.$validate()
 
-  if (!v$.value.$error || selectedKey.value === '예금 희망 금액' || selectedKey.value === '적금 희망 기간 (월)') {
+  if (!v$.value.$error || selectedKey.value === '예금 희망 기간 (월)' || selectedKey.value === '적금 희망 기간 (월)') {
     const key = ref('')
     const body = ref(state.value.updateValue)
     if (selectedKey.value === '나이') {
@@ -110,8 +110,6 @@ const editProfileImg = function (event) {
   if (isShowProfileInput.value === false) {
     isShowProfileInput.value = true
   } else {
-    console.log(event)
-    console.log(image.value)
     axios({
       method: 'put',
       url: `${userStore.API_URL}/users/${usernameTemp}/profile/`,
@@ -124,7 +122,6 @@ const editProfileImg = function (event) {
       }
     })
       .then((res) => {
-        // console.log(res.data)
         userStore.getUserInfo(usernameTemp)
         isShowProfileInput.value = false
       })
