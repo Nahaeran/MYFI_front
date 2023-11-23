@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, onRenderTracked } from 'vue'
 // import Map from '@/components/Map.vue'
 
 const selectedBank = ref('전체보기')
@@ -29,7 +29,7 @@ const jeju = ["서귀포시","제주시","남제주군","북제주군"];
 const chungbuk = ["제천시","청주시","충주시","괴산군","단양군","보은군","영동군","옥천군","음성군","증평군","진천군","청원군"];
 
 watch(selectedCity, () => {
-
+  selectedCityDetail.value = null
   if (selectedCity.value == "강원도") {
     citiesDetail.value = gangwon;
   } else if (selectedCity.value == "경기도") {
@@ -83,25 +83,25 @@ watch([selectedCity, selectedCityDetail, selectedBank], () => {
 })
 
 
-
 const MAP_API_KEY = import.meta.env.VITE_MAP_API_KEY
 
 const center = ref([37.566826, 126.9786567])
 const level = ref(3)
+const mapRef = ref()
 
 onMounted(() => {
   if (window.kakao && window.kakao.maps) {
-    initMap()
+    initMap('init')
   } else {
     const script = document.createElement('script')
 
-    script.onload = () => kakao.maps.load(initMap)
+    script.onload = () => kakao.maps.load(() => initMap('init'))
     script.src = `//dapi.kakao.com/v2/maps/sdk.js?autoload=false&appkey=${MAP_API_KEY}&libraries=services`
     document.head.appendChild(script)
   }
 })
 
-const initMap = () => {
+const initMap = (state='current') => {
   // 마커를 클릭하면 장소명을 표출할 인포윈도우 입니다
   const infowindow = new kakao.maps.InfoWindow({zIndex:1});
 
@@ -112,95 +112,53 @@ const initMap = () => {
           level: level.value // 지도의 확대 레벨
       };  
 
-  // 지도를 생성합니다    
-  var map = new kakao.maps.Map(mapContainer, mapOption); 
-
-  kakao.maps.event.addListener(map, 'center_changed', function() {
-
-  // 지도의  레벨을 얻어옵니다
-  const levelMap = map.getLevel();
-  
-  level.value = levelMap
-
-
-  // 지도의 중심좌표를 얻어옵니다 
-  const latlng = map.getCenter(); 
-  center.value = [latlng.getLat(), latlng.getLng()]
-
-  });
-
-  // 장소 검색 객체를 생성합니다
-  const ps = new kakao.maps.services.Places(map); 
-  
-  // 키워드에 따라 은행을 검색합니다
-  if (selectedBank.value === '전체보기' || selectedBank.value === '은행') {
-    ps.categorySearch('BK9', placesSearchCB, {useMapBounds:true}); 
+  // 지도를 생성합니다  
+  if (state === 'init') {
+    var map = new kakao.maps.Map(mapContainer, mapOption)
+    map.setDraggable(true);
+    mapRef.value = map
   } else {
-    ps.keywordSearch(selectedBank.value, placesSearchCB, {useMapBounds:true});
+    var map = mapRef.value
   }
   
-
-  // 키워드 검색 완료 시 호출되는 콜백함수 입니다
-  function placesSearchCB (data, status, pagination) {
-      if (status === kakao.maps.services.Status.OK) {
-          for (var i=0; i<data.length; i++) {
-              displayMarker(data[i]);    
-          }       
-      }
-  }
-
-  // 지도에 마커를 표시하는 함수입니다
-  function displayMarker(place) {
-      // 마커를 생성하고 지도에 표시합니다
-      const marker = new kakao.maps.Marker({
-          map: map,
-          position: new kakao.maps.LatLng(place.y, place.x) 
-      });
-
-      // 마커에 클릭이벤트를 등록합니다
-      kakao.maps.event.addListener(marker, 'click', function() {
-          // 마커를 클릭하면 장소명이 인포윈도우에 표출됩니다
-          infowindow.setContent('<div style="padding:5px;font-size:12px;">' + place.place_name + '</div>');
-          infowindow.open(map, marker);
-      });
-  }
-}
-
-const searchMap = () => {
-  // 마커를 클릭하면 장소명을 표출할 인포윈도우 입니다
-  const infowindow = new kakao.maps.InfoWindow({zIndex:1});
-
-  const mapContainer = document.getElementById('map'), // 지도를 표시할 div 
-      mapOption = {
-          center: new kakao.maps.LatLng(center.value[0], center.value[1]), // 지도의 중심좌표
-          // level: 3 // 지도의 확대 레벨
-          level: level.value // 지도의 확대 레벨
-      };  
-
-  // 지도를 생성합니다    
-  var map = new kakao.maps.Map(mapContainer, mapOption); 
 
   kakao.maps.event.addListener(map, 'center_changed', function() {
 
-  // 지도의  레벨을 얻어옵니다
-  const levelMap = map.getLevel();
-  
-  level.value = levelMap
+    // 지도의  레벨을 얻어옵니다
+    const levelMap = map.getLevel();
+    
+    level.value = levelMap
 
 
-  // 지도의 중심좌표를 얻어옵니다 
-  const latlng = map.getCenter(); 
-  center.value = [latlng.getLat(), latlng.getLng()]
+    // 지도의 중심좌표를 얻어옵니다 
+    const latlng = map.getCenter(); 
+    center.value = [latlng.getLat(), latlng.getLng()]
 
   });
 
   // 장소 검색 객체를 생성합니다
   const ps = new kakao.maps.services.Places(map); 
   
-  ps.keywordSearch(keyword.value, placesSearchCB);
+  if (state !== 'search' ) {
+    // 키워드에 따라 은행을 검색합니다
+    if (selectedBank.value === '전체보기' || selectedBank.value === '은행') {
+      ps.categorySearch('BK9', placesSearchCB, {useMapBounds:true}); 
+    } else {
+      ps.keywordSearch(selectedBank.value, placesSearchCB, {useMapBounds:true});
+    }
+    // 키워드 검색 완료 시 호출되는 콜백함수 입니다
+    function placesSearchCB (data, status, pagination) {
+        if (status === kakao.maps.services.Status.OK) {
+            for (var i=0; i<data.length; i++) {
+                displayMarker(data[i]);    
+            }       
+        }
+    }
+  } else {
+    ps.keywordSearch(keyword.value, placesSearchCB);
 
-  // 키워드 검색 완료 시 호출되는 콜백함수 입니다
-  function placesSearchCB (data, status, pagination) {
+    // 키워드 검색 완료 시 호출되는 콜백함수 입니다
+    function placesSearchCB (data, status, pagination) {
 
       if (status === kakao.maps.services.Status.OK) {
 
@@ -216,7 +174,10 @@ const searchMap = () => {
       // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
       map.setBounds(bounds);
       } 
+    }
   }
+  
+  
 
   // 지도에 마커를 표시하는 함수입니다
   function displayMarker(place) {
@@ -237,7 +198,7 @@ const searchMap = () => {
 
 
 const clickSearch = function () {
-  searchMap()
+  initMap('search')
 }
 
 const clickCurrentSearch = function () {

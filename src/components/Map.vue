@@ -54,6 +54,7 @@ const initMap = () => {
 
   // 지도를 생성합니다    
   var map = new kakao.maps.Map(mapContainer, mapOption); 
+  map.setDraggable(true);
 
   kakao.maps.event.addListener(map, 'center_changed', function() {
 
