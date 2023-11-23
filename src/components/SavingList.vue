@@ -346,7 +346,7 @@ const deleteSavingUser = function () {
       :items="savings"
       item-value="saving_code"
       height="600"
-      class="table"
+      class="table elevation-6"
     >
       <template v-slot:item="{ item }">
         <tr @click="clickRow(item)">
@@ -387,5 +387,9 @@ tbody > tr {
 tbody > tr:hover {
   background-color: rgb(247, 250, 253);
   color: #1089FF;
+}
+
+.table {
+  border-radius: 10px;
 }
 </style>

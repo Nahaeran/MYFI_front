@@ -37,7 +37,7 @@ onMounted(() => {
         :to="{ name: 'postCreate' }"
       >글 쓰기</v-btn>
     </div>
-    <v-table class="table">
+    <v-table class="table  elevation-6">
       <thead>
         <tr>
           <th class="text-left pl-15">
@@ -89,7 +89,7 @@ onMounted(() => {
 }
 
 .table {
-  border: 1px solid gray;
+  /* border: 1px solid gray; */
   border-radius: 5px;
 }
 

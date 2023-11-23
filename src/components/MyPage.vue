@@ -38,7 +38,7 @@ onMounted(() => {
   userInfo.value = {
     '회원번호': storeUserInfo.id,
     '아이디': storeUserInfo.username,
-    '이름': storeUserInfo.name,
+    '닉네임': storeUserInfo.name,
     '이메일': storeUserInfo.email,
     '나이': storeUserInfo.age,
     '자산': storeUserInfo.money,
@@ -220,7 +220,7 @@ const editProfileImg = function (event) {
               <td>{{ value }}</td>
               <td>
                 <v-icon
-                  v-if="key !== '회원번호' && key !== '아이디' && key !== '이름' && key !== '이메일'"
+                  v-if="key !== '회원번호' && key !== '아이디' && key !== '닉네임' && key !== '이메일'"
                   size="small"
                   class="me-2"
                   @click="editValue(key, value)"

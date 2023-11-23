@@ -212,56 +212,6 @@ const clickCurrentSearch = function () {
 <template>
   <div class="container">
     <h1>주변 은행 검색</h1>
-    <!-- <v-container>
-      <v-row>
-        <v-col
-          cols="12"
-          md="3"
-        >
-          <v-select
-            variant="outlined"
-            color="#1089FF"
-            :items="cities"
-            label="광역시 / 도"
-            v-model="selectedCity"
-          ></v-select>
-        </v-col>
-        <v-col
-          cols="12"
-          md="3"
-        >
-          <v-select
-            variant="outlined"
-            color="#1089FF"
-            :items="citiesDetail"
-            label="시/군/구"
-            v-model="selectedCityDetail"
-          ></v-select>
-        </v-col>
-        <v-col
-          cols="12"
-          md="3"
-        >
-          <v-select
-            variant="outlined"
-            color="#1089FF"
-            :items="banks"
-            label="은행"
-            v-model="selectedBank"
-          ></v-select>
-        </v-col>
-        <v-col
-          cols="12"
-          md="3"
-        >
-          <v-btn
-            variant="flat"
-            color="#1089FF"
-            @click="clickSearch"
-          >찾기</v-btn>
-        </v-col>
-      </v-row>
-    </v-container> -->
 
     <div class="d-flex align-center my-5">
       <v-select
@@ -335,6 +285,7 @@ const clickCurrentSearch = function () {
 
 .map-container {
   position: relative;
+  border-radius: 10px;
 }
 
 .current-search-btn {
@@ -344,5 +295,9 @@ const clickCurrentSearch = function () {
   z-index: 100;
   transform: translateX(-50%);
   background-color: white;
+}
+
+#map {
+  border-radius: 10px;
 }
 </style>

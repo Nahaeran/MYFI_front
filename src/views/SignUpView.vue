@@ -144,7 +144,7 @@ const signUp = function () {
       <v-text-field
         variant="outlined"
         color="#1089FF"
-        label="이름"
+        label="닉네임"
         v-model="state.name"
         :error-messages="v$.name.$errors.map(e => e.$message)"
         @input="v$.name.$touch"

@@ -10,7 +10,7 @@ import Footer from '@/components/Footer.vue'
       <div class="hr"></div>
     </header>
     <RouterView />
-    <Footer />
+    <Footer class="footer"/>
   </div>
 </template>
 
@@ -18,6 +18,13 @@ import Footer from '@/components/Footer.vue'
 .hr {
   height: 1px;
   background-color: #DBDBDB;
+}
+
+.footer {
+  /* position: absolute;
+  bottom: -200px; */
+  position: relative;
+  bottom: -150px;
 }
 </style>
 
