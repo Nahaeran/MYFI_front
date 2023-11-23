@@ -64,6 +64,7 @@ const makeItems = function (item, isDeposit=true) {
 
 
 onMounted(() => {
+  loading.value = true
   userStore.getUserInfo(userStore.userInfo.username)
 
   if (userStore.userInfo.age && userStore.userInfo.money && userStore.userInfo.salary && userStore.userInfo.desire_amount_deposit
@@ -93,7 +94,7 @@ onMounted(() => {
         for (const saving of savings) {
           recommend2.value.push(makeItems(saving.saving, false))
         }
-
+        loading.value = false
         // console.log(recommend2.value)
       })
       .catch((err) => {
@@ -121,7 +122,7 @@ onMounted(() => {
         for (const saving of savings) {
           recommend1.value.push(makeItems(saving, false))
         }
-
+        
         // console.log(recommend1.value)
       })
       .catch((err) => {
@@ -438,7 +439,7 @@ const deleteProductUser = function (data) {
             <p
               v-if="isNotSimilarUsers"
               class="ml-5"
-            >아쉽게도 내 나이, 자산, 연봉과 비슷한 유저가 없어요 🥲<br>대신 모든 유저들이 많이 가입한 상품 top 20을 준비했습니다!</p>
+            ><br>아쉽게도 내 나이, 자산, 연봉과 비슷한 유저가 없어요 🥲<br>대신 모든 유저들이 많이 가입한 상품 top 20을 준비했습니다!</p>
 
             <v-data-table-virtual
               :headers="headers"
