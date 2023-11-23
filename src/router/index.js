@@ -110,7 +110,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/:username',
+      path: '/:username*',
       component: MyPageView,
       beforeEnter: (to, from) => {
         const userStore = useUserStore()

@@ -53,6 +53,7 @@ onMounted(() => {
 const editValue = function (key, value) {
   selectedKey.value = key
   state.value.updateValue = userInfo.value[key]
+  selectedMonth.value = value
   dialog.value = true
 }
 
@@ -98,6 +99,7 @@ const save = function () {
         userStore.getUserInfo(usernameTemp)
         userInfo.value[selectedKey.value] = body.value
         selectedKey.value = state.value.updateValue = ''
+        selectedMonth.value = null
         dialog.value = false
       })
       .catch((err) => {
