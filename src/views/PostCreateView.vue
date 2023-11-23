@@ -52,7 +52,7 @@ const createPost = function () {
       }
     })
       .then((res) => {
-        router.push({ name: 'postDetail', params: { id: res.data.id } })
+        router.push({ name: 'postDetail', params: { id: res.data.id }, query: { page: 1 } })
       })
       .catch((err) => {
         console.log(err)
