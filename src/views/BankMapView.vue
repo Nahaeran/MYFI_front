@@ -212,7 +212,7 @@ const clickCurrentSearch = function () {
 <template>
   <div class="container">
     <h1>주변 은행 검색</h1>
-    <v-container>
+    <!-- <v-container>
       <v-row>
         <v-col
           cols="12"
@@ -261,21 +261,69 @@ const clickCurrentSearch = function () {
           >찾기</v-btn>
         </v-col>
       </v-row>
-    </v-container>
+    </v-container> -->
+
+    <div class="d-flex align-center my-5">
+      <v-select
+        variant="outlined"
+        color="#1089FF"
+        :items="cities"
+        label="광역시 / 도"
+        v-model="selectedCity"
+        class="mr-2"
+      ></v-select>
+
+      <v-select
+        variant="outlined"
+        color="#1089FF"
+        :items="citiesDetail"
+        label="시/군/구"
+        v-model="selectedCityDetail"
+        class="mx-2"
+      ></v-select>
+
+      <v-select
+        variant="outlined"
+        color="#1089FF"
+        :items="banks"
+        label="은행"
+        v-model="selectedBank"
+        class="mx-2"
+      ></v-select>
+
+      <v-btn
+        variant="flat"
+        color="#1089FF"
+        size="x-large"
+        @click="clickSearch"
+        class="pr-7 ml-2 mb-6"
+      >
+        <v-icon class="me-1 mt-1">mdi-map-search-outline</v-icon>
+        찾기</v-btn>
+    </div>
     
     <!-- <Map
       :width="1200"
       :height="600"
       :key-word="keyword"
     /> -->
-    <div>
-    <v-btn
-      variant="flat"
-      color="#1089FF"
-      @click="clickCurrentSearch"
-    >현 지도에서 해당 은행 검색</v-btn>
-    <div id="map" :style="`width: 1200px; height: 600px;`"></div>
-  </div>
+    <div class="map-container elevation-7 mb-15">
+      <v-btn
+        variant="text"
+        color="#1089FF"
+        @click="clickCurrentSearch"
+        class="current-search-btn"
+        rounded="xl"
+        elevation="8"
+        size="large"
+      > 
+        <v-icon class="me-1">
+          mdi-reload
+        </v-icon>
+        <!-- <v-icon icon="fa:fas fa-solid fa-rotate-right" style="color: #90a7d0;"></v-icon> -->
+        현 지도에서 해당 은행 검색</v-btn>
+      <div id="map" :style="`width: 1200px; height: 600px;`"></div>
+    </div>
   </div>
 </template>
 
@@ -283,5 +331,18 @@ const clickCurrentSearch = function () {
 .container {
   width: 1200px;
   margin: 2rem auto;
+}
+
+.map-container {
+  position: relative;
+}
+
+.current-search-btn {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  z-index: 100;
+  transform: translateX(-50%);
+  background-color: white;
 }
 </style>
