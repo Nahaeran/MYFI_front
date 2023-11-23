@@ -9,10 +9,10 @@ const headers = [
   { title: '공시 제출일', align: 'start', sortable: false, width:'10%', key: 'dcls_month' },
   { title: '금융회사명', align: 'start', sortable: false, key: 'kor_co_nm' },
   { title: '상품명', align: 'center', sortable: false, width:'32%', key: 'name' },
-  { title: '6개월 (Click to sort)', align: 'center', width:'12%', key: '6month' },
-  { title: '12개월 (Click to sort)', align: 'center', width:'12%', key: '12month' },
-  { title: '24개월 (Click to sort)', align: 'center', width:'12%', key: '24month' },
-  { title: '36개월 (Click to sort)', align: 'center', width:'12%', key: '36month' },
+  { title: '6개월 (Click to sort)', align: 'end', width:'12%', key: '6month' },
+  { title: '12개월 (Click to sort)', align: 'end', width:'12%', key: '12month' },
+  { title: '24개월 (Click to sort)', align: 'end', width:'12%', key: '24month' },
+  { title: '36개월 (Click to sort)', align: 'end', width:'12%', key: '36month' },
 ]
 
 const deposits = ref([])

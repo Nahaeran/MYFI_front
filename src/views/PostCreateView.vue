@@ -63,7 +63,7 @@ const createPost = function () {
 
 <template>
   <div class="container">
-    <GoToBack :goName="{ name: 'postList' }" />
+    <GoToBack :goName="{ name: 'postList', query: { page: 1 } }" />
     <h1>글 쓰기</h1>
     <v-form class="my-5" @keypress.enter="createPost">
       <v-text-field
