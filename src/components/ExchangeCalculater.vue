@@ -20,6 +20,8 @@ const states = ['송금 받으실 때', '송금 보내실 때', '매매 기준�
 
 const userStore = useUserStore()
 
+const emit = defineEmits(['passCurrency'])
+
 onMounted(() => {
   axios({
     method: 'get',
@@ -29,6 +31,8 @@ onMounted(() => {
       response.value = res.data.filter(data => data['ttb'] !== '0')
 
       currencies.value = response.value.map(item => item['cur_nm'])
+      const units = response.value.map(item => item['cur_unit'])
+      emit('passCurrency', currencies.value, units)
       const usdInfo = response.value.find(item => item['cur_nm'] === '미국 달러')
       selectedTtb.value = Number(usdInfo['ttb'].replaceAll(',', ''))
       selectedTts.value = Number(usdInfo['tts'].replaceAll(',', ''))
