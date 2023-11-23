@@ -5,7 +5,8 @@ const MAP_API_KEY = import.meta.env.VITE_MAP_API_KEY
 
 const props = defineProps({
   width: Number,
-  height: Number
+  height: Number,
+  keyWord: String
 })
 
 const center = ref([37.566826, 126.9786567])
@@ -79,8 +80,17 @@ const initMap = () => {
   // 장소 검색 객체를 생성합니다
   const ps = new kakao.maps.services.Places(map); 
   
-  // 카테고리로 은행을 검색합니다
+  // 키워드에 따라 은행을 검색합니다
+  // if (props.keyWord === '전체보기') {
+  //   ps.categorySearch('BK9', placesSearchCB, {useMapBounds:true}); 
+  // } else {
+  //   ps.keywordSearch(props.keyWord, placesSearchCB, {useMapBounds:true}); 
+  // }
+  // ps.keywordSearch(props.keyWord, placesSearchCB); 
   ps.categorySearch('BK9', placesSearchCB, {useMapBounds:true}); 
+  
+
+  
 
   // 키워드 검색 완료 시 호출되는 콜백함수 입니다
   function placesSearchCB (data, status, pagination) {
@@ -117,7 +127,11 @@ const clickCurrentSearch = function () {
 
 <template>
   <div>
-    <v-btn @click="clickCurrentSearch">현 지도에서 검색</v-btn>
+    <v-btn
+      variant="flat"
+      color="#1089FF"
+      @click="clickCurrentSearch"
+    >현 지도에서 검색</v-btn>
     <div id="map" :style="`width: ${width}px; height: ${height}px;`"></div>
   </div>
 </template>
