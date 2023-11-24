@@ -13,6 +13,7 @@ const userStore = useUserStore()
       cycle
       hide-delimiters
       show-arrows="hover"
+      height="400"
     >
       <v-carousel-item>
         <div class="caro-item-text">
@@ -56,7 +57,7 @@ const userStore = useUserStore()
         <div class="item3">
           <p><span class="color">금융</span>과 <span class="color">나</span>를 잇다.</p>
           <div class="title">
-            <p><span class="color text-h1">MYFI</span></p>
+            <p><span class="color text-h1 font-weight-bold">MYFI</span></p>
           </div>
           <v-btn
             block
@@ -131,13 +132,13 @@ const userStore = useUserStore()
 
 .caro-item-text {
   position: absolute;
-  top: 30%;
+  top: 26%;
   left: 15vw;
 }
 
 .item3 {
   position: absolute;
-  top: 30%;
+  top: 26%;
   left: 28vw;
 }
 
@@ -168,7 +169,7 @@ const userStore = useUserStore()
 
 .caro-item-img {
   position: absolute;
-  top: 2rem;
+  /* top: 2rem; */
   right: 17vw;
 }
 
