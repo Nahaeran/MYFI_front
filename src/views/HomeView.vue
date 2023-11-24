@@ -52,11 +52,10 @@ const userStore = useUserStore()
       </v-carousel-item>
 
       <v-carousel-item>
-        <div class="caro-item-text">
-          <p><span class="color">예 ∙ 적금 금리</span>를 쉽게 비교하고</p>
+        <div class="item3">
+          <p><span class="color">금융</span>과 <span class="color">나</span>를 잇다.</p>
           <div class="title">
-            <p>나에게 맞는</p>
-            <p><span class="color">금융상품</span>을 <span class="color">추천</span> 받자!</p>
+            <p><span class="color text-h1">MYFI</span></p>
           </div>
           <v-btn
             block
@@ -110,6 +109,18 @@ const userStore = useUserStore()
   left: 15vw;
 }
 
+.item3 {
+  position: absolute;
+  top: 30%;
+  left: 28vw;
+}
+
+.item3 > p {
+  margin-left: 5px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
 .caro-item-text > p {
   margin-left: 5px;
   font-size: 20px;
@@ -132,7 +143,7 @@ const userStore = useUserStore()
 .caro-item-img {
   position: absolute;
   top: 2rem;
-  right: 15vw;
+  right: 17vw;
 }
 
 @media (max-width: 1250px) {

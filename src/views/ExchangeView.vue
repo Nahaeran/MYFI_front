@@ -3,14 +3,22 @@ import { ref } from 'vue'
 import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
 import ExchangeCard from '@/components/ExchangeCard.vue'
 
-const currencies = ref()
-const units = ref()
+// const currencies = ref()
+// const units = ref()
+const datas = ref([])
 
 const passCurrency = function (cur, uni) {
-  currencies.value = cur
-  units.value = uni
-  console.log(currencies.value)
-  console.log(units.value)
+  datas.value = []
+  for (let i=0; i < cur.length; i++) {
+    if (uni[i].includes('(100)')) {
+      datas.value.push({ 'cur': cur[i], 'unit': uni[i].slice(0, 3) })
+    } else if (uni[i] !== 'CNH')  {
+      datas.value.push({ 'cur': cur[i], 'unit': uni[i] })
+    }
+    
+  }
+  // console.log(currencies.value)
+  // console.log(units.value)
 }
 </script>
 
@@ -20,27 +28,23 @@ const passCurrency = function (cur, uni) {
     <!-- <v-divider class="my-3"></v-divider> -->
     <ExchangeCalculater class="elevation-6" @pass-currency="passCurrency"/>
 
-    <div class="card-container">
-      <v-container>
-        <v-row align="center" justify="center">
-          <v-col
-            cols="6"
-          >
-            <ExchangeCard
-              :currency="'USD'"
-              :name="'미국 달러'"
-            />
-          </v-col>
-          <v-col
-            cols="6"
-          >
-            <ExchangeCard
-              :currency="'JPY'"
-              :name="'일본 옌'"
-            />
-          </v-col>
-        </v-row>
-      </v-container>
+    <div class="card-container mt-10">
+        <v-virtual-scroll :items="datas" height="600">
+          <template v-slot:default="{ item }">
+            <v-list-item>
+                <ExchangeCard
+                  v-for="data in datas"
+                  :key="data.unit"
+                  :currency="data.unit"
+                  :name="data.cur"
+                  width="450"
+                  style="display: inline-block;"
+                  class="ma-3"
+                  elevation="5"
+                />
+            </v-list-item>
+          </template>
+        </v-virtual-scroll>
     </div>
   </div>
 </template>
