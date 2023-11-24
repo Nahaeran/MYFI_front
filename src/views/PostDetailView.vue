@@ -72,7 +72,7 @@ const deletePost = function () {
       }
     })
       .then((res) => {
-        router.push({ name: 'postList'})
+        router.push({ name: 'postList', query: { page: pageNum }})
       })
       .catch((err) => {
         console.log(err)

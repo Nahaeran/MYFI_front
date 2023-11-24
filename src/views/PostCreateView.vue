@@ -65,7 +65,7 @@ const createPost = function () {
   <div class="container">
     <GoToBack :goName="{ name: 'postList', query: { page: 1 } }" />
     <h1>글 쓰기</h1>
-    <v-form class="my-5" @keypress.enter="createPost">
+    <v-form class="my-5">
       <v-text-field
         variant="outlined"
         color="#1089FF"
@@ -74,6 +74,7 @@ const createPost = function () {
         :error-messages="v$.title.$errors.map(e => e.$message)"
         @input="v$.title.$touch"
         @blur="v$.title.$touch"
+        @keypress.enter="createPost"
       ></v-text-field>
       <v-textarea
         variant="outlined"
