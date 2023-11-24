@@ -2,6 +2,7 @@
 import { useUserStore } from '@/stores/users'
 import Map from '@/components/Map.vue'
 import ExchangeCalculater from '@/components/ExchangeCalculater.vue'
+import ExchangeCard from '@/components/ExchangeCard.vue'
 
 const userStore = useUserStore()
 </script>
@@ -72,14 +73,39 @@ const userStore = useUserStore()
   </div>
 
   <div class="container d-flex justify-space-between align-center">
-    <div class="calculater">
-      <h1><span class="color">환율</span> 계산기</h1>
-      <ExchangeCalculater class="elevation-4"/>
+    <div class="d-flex flex-column w-100">
+
+      <div>
+        <ExchangeCard
+          :currency="'USD'"
+          :name="'미국 달러'"
+          width="47%"
+          style="display: inline-block;"
+          class="mb-5"
+          elevation="5"
+        />
+        <ExchangeCard
+          :currency="'JPY'"
+          :name="'일본 옌'"
+          width="47%"
+          style="display: inline-block;"
+          class="mb-5 ml-3"
+          elevation="5"
+        />
+      </div>
+
+      <div class="calculater">
+        <h1><span class="color">환율</span> 계산기</h1>
+        <ExchangeCalculater class="elevation-4"/>
+      </div>
+      
     </div>
+    
     
     <Map 
       :width="350"
       :height="600"
+      class="mt-5"
     />
   </div>
 
@@ -92,7 +118,7 @@ const userStore = useUserStore()
 }
 
 .calculater {
-  width: 70%;
+  width: 95%;
   position: relative;
 }
 
